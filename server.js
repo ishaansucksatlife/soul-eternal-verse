@@ -16,8 +16,13 @@ const FROM_EMAIL = process.env.FROM_EMAIL || 'onboarding@resend.dev';
 
 app.use(compression());
 app.use(express.json());
-app.use(express.static(process.cwd())); 
+// Serve static files with explicit paths for Vercel
+app.use('/css', express.static(path.join(process.cwd(), 'css')));
+app.use('/js', express.static(path.join(process.cwd(), 'js')));
+app.use('/modules', express.static(path.join(process.cwd(), 'modules')));
 app.use('/works', express.static(path.join(process.cwd(), 'works')));
+app.use('/cursors', express.static(path.join(process.cwd(), 'cursors')));
+app.use(express.static(process.cwd()));
 
 let cachedData = null;
 
