@@ -5,7 +5,8 @@
     { "src": "css/**", "use": "@vercel/static" },
     { "src": "js/**", "use": "@vercel/static" },
     { "src": "modules/**", "use": "@vercel/static" },
-    { "src": "works/**", "use": "@vercel/static" }
+    { "src": "works/**", "use": "@vercel/static" },
+    { "src": "banner-profile/**", "use": "@vercel/static" }
   ],
   "routes": [
     { "handle": "filesystem" },
