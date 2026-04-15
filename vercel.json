@@ -11,6 +11,11 @@
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/server.js" },
+    { "src": "/css/(.*)", "dest": "/css/$1" },
+    { "src": "/js/(.*)", "dest": "/js/$1" },
+    { "src": "/modules/(.*)", "dest": "/modules/$1" },
+    { "src": "/cursors/(.*)", "dest": "/cursors/$1" },
+    { "src": "/works/(.*)", "dest": "/works/$1" },
     { "src": "/(.*)", "dest": "/index.html", "status": 200 }
   ]
 }
