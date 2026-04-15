@@ -7,7 +7,8 @@
     { "src": "js/**", "use": "@vercel/static" },
     { "src": "modules/**", "use": "@vercel/static" },
     { "src": "cursors/**", "use": "@vercel/static" },
-    { "src": "works/**", "use": "@vercel/static" }
+    { "src": "works/**", "use": "@vercel/static" },
+    { "src": "banner-profile/**", "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/server.js" },
@@ -16,6 +17,7 @@
     { "src": "/modules/(.*)", "dest": "/modules/$1" },
     { "src": "/cursors/(.*)", "dest": "/cursors/$1" },
     { "src": "/works/(.*)", "dest": "/works/$1" },
+    { "src": "/banner-profile/(.*)", "dest": "/banner-profile/$1" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
