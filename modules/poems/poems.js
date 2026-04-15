@@ -35,7 +35,7 @@
         }
         empty.style.display = 'none';
         container.innerHTML = poems.map(poem => `
-            <div class="poem-item" data-poem='${JSON.stringify(poem)}'>
+            <div class="poem-item" data-poem-name="${encodeURIComponent(poem.name)}">
                 <h3 class="poem-title">${window.escapeHtml(poem.name)}</h3>
                 <div class="poem-stats">
                     <span>${window.formatNumber(poem.wordCount)} words</span>
@@ -49,10 +49,13 @@
         `).join('');
         document.querySelectorAll('.poem-item').forEach(item => {
             item.onclick = () => {
-                const poem = JSON.parse(item.getAttribute('data-poem'));
-                window.appState.currentPoem = poem;
-                window.location.hash = `poem/${encodeURIComponent(currentCollection.name)}/${encodeURIComponent(poem.name)}`;
-                window.showModule('poem-detail');
+                const poemName = decodeURIComponent(item.getAttribute('data-poem-name'));
+                const poem = currentCollection.poems.find(p => p.name === poemName);
+                if (poem) {
+                    window.appState.currentPoem = poem;
+                    window.location.hash = `poem/${encodeURIComponent(currentCollection.name)}/${encodeURIComponent(poem.name)}`;
+                    window.showModule('poem-detail');
+                }
             };
         });
     }
@@ -149,7 +152,7 @@
         };
     }
 
-    // Navigation (back buttons)
+    // Navigation
     const backToCollections = document.getElementById('back-to-collections');
     if (backToCollections) backToCollections.onclick = () => { window.location.hash = 'collections'; window.showModule('collections'); };
     const breadcrumbHome = document.getElementById('breadcrumb-home-2');

@@ -1,6 +1,6 @@
 (function() {
     let appData = window.appState.appData;
-    let selectedTags = new Set(); // store selected tags
+    let selectedTags = new Set();
 
     function renderCollectionTags() {
         const container = document.getElementById('collectionFilterTags');
@@ -16,7 +16,6 @@
             btn.textContent = tag;
             if (selectedTags.has(tag)) btn.classList.add('active');
             btn.onclick = () => {
-                // Toggle tag selection
                 if (selectedTags.has(tag)) {
                     selectedTags.delete(tag);
                     btn.classList.remove('active');
@@ -32,7 +31,7 @@
 
     function applyTagFilter() {
         if (selectedTags.size === 0) {
-            renderAllCollections(); // show all collections
+            renderAllCollections();
         } else {
             const filtered = appData.collections.filter(coll =>
                 coll.tags.some(tag => selectedTags.has(tag))
@@ -54,11 +53,12 @@
             return;
         }
         empty.style.display = 'none';
-        grid.innerHTML = collections.map(coll => {
+        // Store collection name instead of full object to avoid JSON parsing issues
+        grid.innerHTML = collections.map((coll, index) => {
             const coverUrl = coll.hasCover ? `/works/${encodeURIComponent(coll.name)}/c-cover.png` : null;
             const bgStyle = coverUrl ? `background-image: url('${coverUrl}'); background-size: cover; background-position: center;` : 'background: var(--gradient);';
             return `
-                <div class="collection-card" data-collection='${JSON.stringify(coll)}'>
+                <div class="collection-card" data-collection-name="${encodeURIComponent(coll.name)}">
                     <div class="collection-img" style="${bgStyle}">
                         <div class="collection-overlay">
                             <h3 class="collection-title">${window.escapeHtml(coll.name)}</h3>
@@ -74,17 +74,21 @@
                 </div>
             `;
         }).join('');
+        
         document.querySelectorAll('.collection-card').forEach(card => {
             card.onclick = () => {
-                const coll = JSON.parse(card.getAttribute('data-collection'));
-                window.appState.currentCollection = coll;
-                window.location.hash = `poems/${encodeURIComponent(coll.name)}`;
-                window.showModule('poems');
+                const collName = decodeURIComponent(card.getAttribute('data-collection-name'));
+                const coll = appData.collections.find(c => c.name === collName);
+                if (coll) {
+                    window.appState.currentCollection = coll;
+                    window.location.hash = `poems/${encodeURIComponent(coll.name)}`;
+                    window.showModule('poems');
+                }
             };
         });
     }
 
-    // Search input (text search)
+    // Search and filter events
     const searchBtn = document.getElementById('search-collections-btn');
     if (searchBtn) {
         searchBtn.onclick = () => {
@@ -103,16 +107,14 @@
             else if (!this.value && selectedTags.size > 0) applyTagFilter();
             else {
                 const query = this.value.toLowerCase();
-                const filtered = appData.collections.filter(c =>
+                let filtered = appData.collections.filter(c =>
                     c.name.toLowerCase().includes(query) ||
                     c.description.toLowerCase().includes(query)
                 );
                 if (selectedTags.size > 0) {
-                    const tagFiltered = filtered.filter(c => c.tags.some(t => selectedTags.has(t)));
-                    renderCollectionsGrid(tagFiltered);
-                } else {
-                    renderCollectionsGrid(filtered);
+                    filtered = filtered.filter(c => c.tags.some(t => selectedTags.has(t)));
                 }
+                renderCollectionsGrid(filtered);
             }
         });
     }
