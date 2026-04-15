@@ -26,10 +26,10 @@
             window.appState.currentCollection = currentCollection;
             window.appState.currentPoem = currentPoem;
             
-            // Show reading progress bar
+            // Reading progress bar
             const progressBar = document.getElementById('readingProgress');
             if (progressBar) progressBar.style.display = 'block';
-            // Reset progress bar width
+            // Reset progress
             const progressFill = document.getElementById('readingProgressBar');
             if (progressFill) progressFill.style.width = '0%';
             

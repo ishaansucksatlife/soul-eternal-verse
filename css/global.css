@@ -331,7 +331,7 @@ footer i {
     }
 }
 
-/* ========= CUSTOM CURSORS – PERMANENT ========= */
+/* Custom cursors */
 html, body, * {
     cursor: url('/cursors/static.cur'), auto !important;
 }
@@ -394,7 +394,7 @@ textarea, .search-box input, .contact-form input, .contact-form textarea {
     cursor: url('/cursors/writing.cur'), text !important;
 }
 
-/* ========= CUSTOM MODAL STYLES ========= */
+/* Custom Modal */
 .custom-modal {
     position: fixed;
     top: 0;

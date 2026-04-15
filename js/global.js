@@ -1,5 +1,3 @@
-// global.js – preloads all modules, forces home on reload, scrolls to top, disables copying and dev tools, custom modals, cursor fix, progress bar reset
-
 window.showModule = function(moduleName) {
     document.querySelectorAll('.module-container').forEach(c => c.classList.remove('active'));
     const activeContainer = document.getElementById(`module-${moduleName}`);
@@ -10,11 +8,10 @@ window.showModule = function(moduleName) {
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
     
-    // Handle reading progress bar: hide when not in poem-detail
+    // Handle reading progress bar
     const progressBar = document.getElementById('readingProgress');
     if (progressBar) {
         if (moduleName === 'poem-detail') {
-            // Will be shown again when poem loads (in poem-detail.js)
             const progressFill = document.getElementById('readingProgressBar');
             if (progressFill) progressFill.style.width = '0%';
         } else {
@@ -39,7 +36,7 @@ async function preloadAll() {
         if (!dataRes.ok) throw new Error(`HTTP ${dataRes.status}`);
         window.appState.appData = await dataRes.json();
 
-        // 2. Fetch all module assets in parallel
+        // 2. Fetch module assets
         const modulePromises = modules.map(async (moduleName) => {
             const [htmlRes, cssRes, jsRes] = await Promise.all([
                 fetch(`/modules/${moduleName}/${moduleName}.html`),
@@ -54,7 +51,7 @@ async function preloadAll() {
         
         const modulesData = await Promise.all(modulePromises);
         
-        // 3. Inject all module content into the DOM
+        // 3. Module to DOM injection
         for (const { moduleName, html, css, js } of modulesData) {
             const container = document.getElementById(`module-${moduleName}`);
             if (container) container.innerHTML = html;
@@ -70,7 +67,7 @@ async function preloadAll() {
             document.body.appendChild(script);
         }
         
-        // 4. Hide loading screen
+        // 4. Loading Screen Hider
         loader.classList.add('hide');
         
         // 5. Initialize custom modal system
@@ -80,7 +77,6 @@ async function preloadAll() {
         window.location.hash = 'home';
         window.showModule('home');
         
-        // 7. Small delay to ensure cursor is applied after DOM updates
         setTimeout(() => {
             document.body.style.cursor = 'url("/cursors/static.cur"), auto';
         }, 50);
@@ -149,7 +145,7 @@ document.getElementById('closeFocus')?.addEventListener('click', () => {
     document.getElementById('focusMode')?.classList.remove('active');
 });
 
-// ---------- ANTI‑COPY & ANTI‑DEV‑TOOLS PROTECTIONS ----------
+// Anti Copy & Anti Dev Tools
 document.addEventListener('contextmenu', function(e) {
     e.preventDefault();
     return false;
@@ -221,7 +217,6 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// ---------- CURSOR FLICKER FIX ----------
 document.addEventListener('mousedown', function(e) {
     if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
         document.body.style.cursor = 'url("/cursors/static.cur"), auto';
@@ -231,7 +226,7 @@ document.addEventListener('mouseup', function() {
     document.body.style.cursor = 'url("/cursors/static.cur"), auto';
 });
 
-// ---------- CUSTOM MODAL SYSTEM ----------
+// Custom Modal System
 let modal = null;
 let modalCallback = null;
 
@@ -334,5 +329,5 @@ window.showPrompt = function(message, onOk, onCancel, title = 'Input', defaultVa
     modal.classList.add('active');
 };
 
-// Start preloading
+// Preloading
 preloadAll();

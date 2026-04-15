@@ -1,5 +1,4 @@
 (function() {
-    // Back button and breadcrumb – direct event handlers (same as collections)
     const backBtn = document.getElementById('back-to-home');
     if (backBtn) {
         backBtn.onclick = (e) => {

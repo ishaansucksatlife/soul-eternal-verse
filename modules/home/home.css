@@ -1,5 +1,4 @@
-/* Homepage – Ultimate Modern Design, Glassmorphism, Perfect Containers */
-
+/* Homepage */
 .profile-hero {
     background: var(--card);
     border-radius: 40px;
@@ -20,7 +19,7 @@
     background-position: center center;
     position: relative;
 }
-}
+
 .banner::before {
     content: '';
     position: absolute;
@@ -62,7 +61,7 @@
     object-fit: cover;
 }
 
-/* Enhanced typography containers */
+/*Typography containers */
 .profile-name {
     font-family: 'Playfair Display', serif;
     font-size: 3.4rem;
@@ -107,7 +106,7 @@
     width: fit-content;
 }
 
-/* Stats cards – clean, glassmorphic */
+/* Stats cards*/
 .stats-grid {
     display: flex;
     justify-content: center;
@@ -141,7 +140,7 @@
     word-break: break-word;
     overflow-wrap: break-word;
 }
-}
+
 .stat-label {
     font-size: 0.85rem;
     text-transform: uppercase;
@@ -150,7 +149,7 @@
     margin-top: 4px;
 }
 
-/* Featured poem showcase – glass card */
+/* Featured poem*/
 .featured-showcase {
     max-width: 580px;
     margin: 2rem auto;
@@ -209,7 +208,7 @@
     font-style: italic;
 }
 
-/* Inspirational quote – soft, elegant */
+/* Quote */
 .home-quote {
     max-width: 550px;
     margin: 2rem auto;
@@ -240,7 +239,7 @@
     font-weight: 500;
 }
 
-/* Navigation buttons – modern, smooth */
+/* Navigation buttons */
 .nav-buttons {
     display: flex;
     justify-content: center;
@@ -293,7 +292,7 @@
     transform: translateX(4px);
 }
 
-/* Responsive fine-tuning */
+/* Responsive */
 @media (max-width: 992px) {
     .profile-content {
         padding: 0 32px 48px;

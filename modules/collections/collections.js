@@ -53,7 +53,6 @@
             return;
         }
         empty.style.display = 'none';
-        // Store collection name instead of full object to avoid JSON parsing issues
         grid.innerHTML = collections.map((coll, index) => {
             const coverUrl = coll.hasCover ? `/works/${encodeURIComponent(coll.name)}/c-cover.png` : null;
             const bgStyle = coverUrl ? `background-image: url('${coverUrl}'); background-size: cover; background-position: center;` : 'background: var(--gradient);';
@@ -88,7 +87,7 @@
         });
     }
 
-    // Search and filter events
+    // Search and filter
     const searchBtn = document.getElementById('search-collections-btn');
     if (searchBtn) {
         searchBtn.onclick = () => {

@@ -14,12 +14,11 @@ const resend = resendApiKey ? new Resend(resendApiKey) : null;
 const TO_EMAIL = process.env.TO_EMAIL || 'sipsofthesoul@gmail.com';
 const FROM_EMAIL = process.env.FROM_EMAIL || 'onboarding@resend.dev';
 
-// Middleware
 app.use(compression());
 app.use(express.json());
-app.use(express.static(__dirname)); // serve root files (index.html, css, js, modules, cursors)
+app.use(express.static(__dirname));
 app.use('/works', express.static(WORKS_DIR));
-app.use('/banner-profile', express.static(path.join(__dirname, 'banner-profile'))); // serve banner/profile images
+app.use('/banner-profile', express.static(path.join(__dirname, 'banner-profile')));
 
 let cachedData = null;
 
@@ -56,7 +55,6 @@ async function scanWorks() {
     const allCollectionTags = new Set();
     const allPoems = [];
     try {
-        // Check if works directory exists
         await fs.access(WORKS_DIR);
         const collectionFolders = await fs.readdir(WORKS_DIR, { withFileTypes: true });
         for (const dirent of collectionFolders) {
@@ -179,15 +177,13 @@ function escapeHtml(str) {
     return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
 }
 
-// Serve frontend for any unmatched route (SPA fallback)
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Export for Vercel serverless environment
 if (require.main === module) {
     app.listen(PORT, async () => {
-        console.log(`✨ Server running at http://localhost:${PORT}`);
+        console.log(`Server running at http://localhost:${PORT}`);
         await refreshCache();
     });
 }

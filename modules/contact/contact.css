@@ -118,7 +118,6 @@
     margin-top: 0.5rem;
 }
 
-/* Back button styling – matches original button */
 .back-btn {
     background: var(--primary);
     color: white;

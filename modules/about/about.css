@@ -45,7 +45,6 @@
     font-family: 'Playfair Display', serif;
 }
 
-/* Back button styling – matches original button */
 .back-btn {
     background: var(--primary);
     color: white;

@@ -43,7 +43,7 @@ window.formatNumber = function(num) {
             return formatted + abbreviations[i].symbol;
         }
     }
-    // Fallback for extremely large numbers (beyond 1e66)
+    // Large Number Fallback 
     return n.toExponential(2);
 };
 
