@@ -1,4 +1,4 @@
-// global.js – preloads all modules, forces home on reload, scrolls to top, disables copying and dev tools, custom modals, cursor fix with MutationObserver
+// global.js – preloads all modules, forces home on reload, scrolls to top, disables copying and dev tools, custom modals, cursor fix, progress bar reset, API retry
 
 window.showModule = function(moduleName) {
     document.querySelectorAll('.module-container').forEach(c => c.classList.remove('active'));
@@ -33,9 +33,30 @@ async function preloadAll() {
     if (!loader) return;
     
     try {
-        const dataRes = await fetch('/api/data');
+        // Fetch poetry data with retry logic (prevents JSON parse error on HTML fallback)
+        let dataRes = null;
+        let retries = 3;
+        while (retries > 0) {
+            try {
+                dataRes = await fetch('/api/data');
+                if (dataRes.ok) break;
+            } catch (e) {
+                console.warn(`Fetch attempt failed (${retries} left)`, e);
+            }
+            retries--;
+            await new Promise(r => setTimeout(r, 1000));
+        }
+        if (!dataRes || !dataRes.ok) throw new Error('Failed to fetch poetry data after retries');
+        
+        // Check if response is JSON (not HTML)
+        const contentType = dataRes.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('API did not return JSON – check Vercel routing');
+        }
+        
         window.appState.appData = await dataRes.json();
 
+        // Fetch all module assets in parallel
         const modulePromises = modules.map(async (moduleName) => {
             const [htmlRes, cssRes, jsRes] = await Promise.all([
                 fetch(`/modules/${moduleName}/${moduleName}.html`),
@@ -50,6 +71,7 @@ async function preloadAll() {
         
         const modulesData = await Promise.all(modulePromises);
         
+        // Inject all module content into the DOM
         for (const { moduleName, html, css, js } of modulesData) {
             const container = document.getElementById(`module-${moduleName}`);
             if (container) container.innerHTML = html;
@@ -65,18 +87,24 @@ async function preloadAll() {
             document.body.appendChild(script);
         }
         
+        // Hide loading screen
         loader.classList.add('hide');
+        
+        // Initialize custom modal system
         initModal();
+        
+        // Force home module
         window.location.hash = 'home';
         window.showModule('home');
         
+        // Small delay to ensure cursor is applied after DOM updates
         setTimeout(() => {
             document.body.style.cursor = 'url("/cursors/static.cur"), auto';
         }, 50);
         
     } catch (err) {
         console.error('Preload failed:', err);
-        loader.innerHTML = '<div class="loading-text">Failed to load. Please refresh.</div>';
+        loader.innerHTML = '<div class="loading-text">Failed to load. Please refresh the page.</div>';
     }
 }
 
@@ -219,12 +247,6 @@ document.addEventListener('mousedown', function(e) {
 document.addEventListener('mouseup', function() {
     document.body.style.cursor = 'url("/cursors/static.cur"), auto';
 });
-
-// ---------- FORCE CURSOR AFTER DOM CHANGES (MUTATION OBSERVER) ----------
-const observer = new MutationObserver(function(mutations) {
-    document.body.style.cursor = 'url("/cursors/static.cur"), auto';
-});
-observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'] });
 
 // ---------- CUSTOM MODAL SYSTEM ----------
 let modal = null;
