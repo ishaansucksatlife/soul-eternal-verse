@@ -1,20 +1,21 @@
 {
   "version": 2,
   "builds": [
-    { "src": "modules/server.js", "use": "@vercel/node" },
+    { "src": "server.js", "use": "@vercel/node" },
     { "src": "index.html", "use": "@vercel/static" },
     { "src": "css/**", "use": "@vercel/static" },
     { "src": "js/**", "use": "@vercel/static" },
     { "src": "modules/**", "use": "@vercel/static" },
     { "src": "banner-profile/**", "use": "@vercel/static" },
-    { "src": "works/**", "use": "@vercel/static" }
+    { "src": "works/**", "use": "@vercel/static" },
+    { "src": "cursors/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/modules/server.js" },
-    { "src": "/js/(.*)", "dest": "/js/$1" },
-    { "src": "/css/(.*)", "dest": "/css/$1" },
+    { "handle": "filesystem" },
+    { "src": "/api/(.*)", "dest": "/server.js" },
     { "src": "/banner-profile/(.*)", "dest": "/banner-profile/$1" },
     { "src": "/modules/(.*)", "dest": "/modules/$1" },
+    { "src": "/works/(.*)", "dest": "/works/$1" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
