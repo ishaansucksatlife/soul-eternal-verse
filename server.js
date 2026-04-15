@@ -16,8 +16,8 @@ const FROM_EMAIL = process.env.FROM_EMAIL || 'onboarding@resend.dev';
 
 app.use(compression());
 app.use(express.json());
-app.use(express.static(__dirname));
-app.use('/works', express.static(WORKS_DIR));
+app.use(express.static(process.cwd())); 
+app.use('/works', express.static(path.join(process.cwd(), 'works')));
 
 let cachedData = null;
 
@@ -125,7 +125,9 @@ async function refreshCache() {
 
 // ---------- API Routes ----------
 app.get('/api/data', async (req, res) => {
-    if (!cachedData) await refreshCache();
+    if (!cachedData) {
+        await refreshCache();
+    }
     res.json(cachedData);
 });
 
@@ -179,7 +181,7 @@ function escapeHtml(str) {
 
 // Serve frontend
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(process.cwd(), 'index.html'));
 });
 
 if (require.main === module) {
