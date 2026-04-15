@@ -6,21 +6,22 @@ const compression = require('compression');
 const { Resend } = require('resend');
 
 const app = express();
-const WORKS_DIR = path.join(__dirname, '..', 'works'); // adjusted path
+const PORT = process.env.PORT || 3000;
+const WORKS_DIR = path.join(__dirname, 'works');
 
 const resendApiKey = process.env.RESEND_API_KEY;
-const resend = new Resend(resendApiKey);
+const resend = resendApiKey ? new Resend(resendApiKey) : null;
 const TO_EMAIL = process.env.TO_EMAIL || 'sipsofthesoul@gmail.com';
 const FROM_EMAIL = process.env.FROM_EMAIL || 'onboarding@resend.dev';
 
 app.use(compression());
 app.use(express.json());
-// No static middleware here; Vercel serves static files separately
+app.use(express.static(__dirname));
 app.use('/works', express.static(WORKS_DIR));
 
 let cachedData = null;
 
-// ---------- File system helpers (unchanged) ----------
+// ---------- File system helpers ----------
 async function readTagsFile(filePath) {
     try {
         const content = await fs.readFile(filePath, 'utf-8');
@@ -53,6 +54,8 @@ async function scanWorks() {
     const allCollectionTags = new Set();
     const allPoems = [];
     try {
+        // Check if works directory exists
+        await fs.access(WORKS_DIR);
         const collectionFolders = await fs.readdir(WORKS_DIR, { withFileTypes: true });
         for (const dirent of collectionFolders) {
             if (!dirent.isDirectory()) continue;
@@ -109,7 +112,9 @@ async function scanWorks() {
                 hasCover: hasCover
             });
         }
-    } catch (err) { console.error('Scan error:', err.message); }
+    } catch (err) {
+        console.error('Scan error (works folder may be missing):', err.message);
+    }
     return { collections, allCollectionTags: Array.from(allCollectionTags).sort(), allPoems };
 }
 
@@ -145,9 +150,9 @@ app.post('/api/contact', async (req, res) => {
         return res.status(400).json({ error: 'Please provide a valid email address.' });
     }
 
-    if (!resendApiKey) {
+    if (!resendApiKey || !resend) {
         console.log(`[CONTACT DEMO] Name: ${name}, Email: ${email}, Message: ${message}`);
-        return res.json({ success: true, message: 'Message received (demo mode). Please set RESEND_API_KEY in .env.' });
+        return res.json({ success: true, message: 'Message received (demo mode). Please set RESEND_API_KEY in environment variables.' });
     }
 
     try {
@@ -172,6 +177,17 @@ function escapeHtml(str) {
     return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
 }
 
-// No catch-all route here; Vercel handles static files and client-side routing
+// Serve frontend for any unmatched route (SPA fallback)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Export for Vercel serverless environment
+if (require.main === module) {
+    app.listen(PORT, async () => {
+        console.log(`✨ Server running at http://localhost:${PORT}`);
+        await refreshCache();
+    });
+}
 
 module.exports = app;
