@@ -14,10 +14,12 @@ const resend = resendApiKey ? new Resend(resendApiKey) : null;
 const TO_EMAIL = process.env.TO_EMAIL || 'sipsofthesoul@gmail.com';
 const FROM_EMAIL = process.env.FROM_EMAIL || 'onboarding@resend.dev';
 
+// Middleware
 app.use(compression());
 app.use(express.json());
-app.use(express.static(__dirname));
+app.use(express.static(__dirname)); // serve root files (index.html, css, js, modules, cursors)
 app.use('/works', express.static(WORKS_DIR));
+app.use('/banner-profile', express.static(path.join(__dirname, 'banner-profile'))); // serve banner/profile images
 
 let cachedData = null;
 
