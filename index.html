@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Soul · Eternal Verse</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/global.css">
+    <style>
+        /* Simple, lightweight loading screen */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1rem;
+            transition: opacity 0.4s ease;
+        }
+        #loading-screen.hide {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        .loading-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .module-container { display: none; }
+        .module-container.active { display: block; }
+    </style>
+</head>
+<body>
+    <script>
+        (function() {
+            const saved = localStorage.getItem('darkMode');
+            if (saved === 'false') {
+                document.body.classList.remove('dark-mode');
+            } else {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('darkMode', 'true');
+            }
+        })();
+    </script>
+
+    <div id="loading-screen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Unfolding verses...</div>
+    </div>
+
+    <div class="reading-progress" id="readingProgress">
+        <div class="reading-progress-bar" id="readingProgressBar"></div>
+    </div>
+    <div class="focus-mode" id="focusMode">
+        <button class="close-focus" id="closeFocus"><i class="fas fa-times"></i></button>
+        <div class="focus-mode-content" id="focusModeContent"></div>
+    </div>
+    <button class="back-to-top" id="backToTop"><i class="fas fa-arrow-up"></i></button>
+
+    <header>
+        <div class="container header-content">
+            <div class="logo">Soul</div>
+            <nav>
+                <ul>
+                    <li><a id="nav-home" class="active" data-module="home">Home</a></li>
+                    <li><a id="nav-collections" data-module="collections">Collections</a></li>
+                    <li><a id="nav-about" data-module="about">About</a></li>
+                    <li><a id="nav-contact" data-module="contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button class="random-poem-btn" id="randomPoemBtn"><i class="fas fa-random"></i></button>
+                <button class="theme-toggle" id="themeToggle"><i class="fas fa-sun"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <div id="module-home" class="module-container"></div>
+    <div id="module-collections" class="module-container"></div>
+    <div id="module-about" class="module-container"></div>
+    <div id="module-contact" class="module-container"></div>
+    <div id="module-poems" class="module-container"></div>
+    <div id="module-poem-detail" class="module-container"></div>
+
+    <footer>
+        <div class="container">
+            <p>© Soul · Eternal Verse — crafted with <i class="fas fa-heart"></i> for poetry lovers</p>
+        </div>
+    </footer>
+
+    <script src="/js/utils/helpers.js"></script>
+    <script src="/js/global.js"></script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+.about-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--card);
+    border-radius: 32px;
+    padding: 2.5rem;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+    transition: var(--transition);
+}
+
+.about-quote {
+    text-align: center;
+    font-size: 1.4rem;
+    font-style: italic;
+    padding: 1.5rem;
+    background: var(--bg);
+    border-radius: 24px;
+    margin-bottom: 2rem;
+    color: var(--accent);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(4px);
+}
+
+.about-quote i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+    color: var(--accent);
+}
+
+.about-content p {
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text);
+}
+
+.about-signature {
+    margin-top: 2rem;
+    text-align: right;
+    font-size: 1.2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-family: 'Playfair Display', serif;
+}
+
+/* Back button styling – matches original button */
+.back-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 22px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+    text-decoration: none;
+}
+.back-btn:hover {
+    background: var(--accent);
+    transform: translateX(-5px);
+    box-shadow: var(--shadow-md);
+    color: white;
+    text-decoration: none;
+}
+
+@media (max-width: 768px) {
+    .about-container {
+        padding: 1.5rem;
+    }
+    .about-quote {
+        font-size: 1.2rem;
+        padding: 1rem;
+    }
+    .about-content p {
+        font-size: 1rem;
+    }
+}

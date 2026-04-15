@@ -1,0 +1,68 @@
+.poems-list {
+    max-width: 880px;
+    margin: 0 auto;
+}
+.poem-item {
+    background: var(--card);
+    border-radius: 24px;
+    padding: 1.8rem;
+    margin-bottom: 1.8rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    border-left: 5px solid transparent;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+}
+.poem-item:hover {
+    transform: translateX(8px);
+    border-left-color: var(--accent);
+    box-shadow: var(--shadow-md);
+}
+.poem-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem;
+    margin-bottom: 0.5rem;
+    color: var(--coffee-dark);
+}
+.poem-stats {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.85rem;
+    color: var(--primary);
+    margin-bottom: 0.8rem;
+}
+.poem-meta {
+    margin-bottom: 1rem;
+}
+.poem-preview {
+    font-style: italic;
+    opacity: 0.85;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.tag {
+    background: var(--primary);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 30px;
+    font-size: 0.75rem;
+    display: inline-block;
+    margin: 4px 4px 0 0;
+    transition: background 0.2s;
+}
+.tag:hover {
+    background: var(--accent);
+}
+@media (max-width: 768px) {
+    .poems-list {
+        max-width: 100%;
+    }
+    .poem-title {
+        font-size: 1.3rem;
+    }
+    .poem-item {
+        padding: 1.2rem;
+    }
+}

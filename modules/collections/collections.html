@@ -1,0 +1,29 @@
+<div class="nav-controls">
+    <a href="#home" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
+    <div class="breadcrumb"><a href="#home">Home</a> <span>></span> <span>Collections</span></div>
+</div>
+<h2 class="page-title">Poetry Collections</h2>
+<div class="search-system">
+    <div class="search-container">
+        <div class="search-box">
+            <input type="text" id="collection-search" placeholder="Search collections by name or description...">
+            <div class="search-actions">
+                <button class="filter-toggle" id="filterToggle"><i class="fas fa-filter"></i></button>
+                <button class="search-btn" id="search-collections-btn"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="filter-panel" id="filterPanel">
+        <div class="filter-section">
+            <h4><i class="fas fa-tags"></i> Filter by tag</h4>
+            <div class="filter-tags" id="collectionFilterTags"></div>
+            <button class="clear-filters-btn" id="clearCollectionFilters">Clear all filters</button>
+        </div>
+    </div>
+</div>
+<div class="collections-grid" id="collections-grid"></div>
+<div class="empty-state" id="collections-empty" style="display: none;">
+    <div class="empty-icon"><i class="fas fa-folder-open"></i></div>
+    <h3>No collections found</h3>
+    <p>Add folders inside /works/ to see your poetry collections.</p>
+</div>
