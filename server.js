@@ -14,14 +14,18 @@ const resend = new Resend(resendApiKey);
 const TO_EMAIL = process.env.TO_EMAIL || 'sipsofthesoul@gmail.com';
 const FROM_EMAIL = process.env.FROM_EMAIL || 'onboarding@resend.dev';
 
+// Middleware
 app.use(compression());
 app.use(express.json());
-// Serve static files with explicit paths for Vercel
+
+// ---------- Vercel-Specific Static Routing ----------
+// Explicitly serve folders first so they don't hit the '*' route
 app.use('/css', express.static(path.join(process.cwd(), 'css')));
 app.use('/js', express.static(path.join(process.cwd(), 'js')));
 app.use('/modules', express.static(path.join(process.cwd(), 'modules')));
 app.use('/works', express.static(path.join(process.cwd(), 'works')));
 app.use('/cursors', express.static(path.join(process.cwd(), 'cursors')));
+// Fallback for root files like favicon or manifest
 app.use(express.static(process.cwd()));
 
 let cachedData = null;
@@ -38,12 +42,11 @@ async function readDescription(filePath) {
     try { return (await fs.readFile(filePath, 'utf-8')).trim(); } catch { return 'No description provided.'; }
 }
 
-// New: read poem description (pdes.txt) – used as preview
 async function readPoemDescription(poemFolderPath) {
     try {
         const content = await fs.readFile(path.join(poemFolderPath, 'pdes.txt'), 'utf-8');
         return content.trim();
-    } catch { return null; } // not present
+    } catch { return null; }
 }
 
 async function readPoemContent(poemFolderPath) {
@@ -80,10 +83,8 @@ async function scanWorks() {
                 const poemContent = await readPoemContent(poemFolderPath);
                 const { wordCount, readingTime } = computeStats(poemContent);
 
-                // ---- NEW: use pdes.txt as preview if exists ----
                 let preview = await readPoemDescription(poemFolderPath);
                 if (!preview) {
-                    // fallback to truncated poem content
                     preview = poemContent.length > 200 ? poemContent.substring(0, 200) + '…' : poemContent;
                 }
 
@@ -125,14 +126,11 @@ async function scanWorks() {
 async function refreshCache() {
     console.log('Scanning works directory...');
     cachedData = await scanWorks();
-    console.log(`Found ${cachedData.collections.length} collections, ${cachedData.allPoems.length} poems.`);
 }
 
 // ---------- API Routes ----------
 app.get('/api/data', async (req, res) => {
-    if (!cachedData) {
-        await refreshCache();
-    }
+    if (!cachedData) await refreshCache();
     res.json(cachedData);
 });
 
@@ -146,36 +144,27 @@ app.get('/api/poem/:collectionName/:poemName', async (req, res) => {
     }
 });
 
-// Contact endpoint (fixed to actually send emails)
 app.post('/api/contact', async (req, res) => {
     const { name, email, message } = req.body;
-    if (!name || !email || !message) {
-        return res.status(400).json({ error: 'All fields are required.' });
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        return res.status(400).json({ error: 'Please provide a valid email address.' });
-    }
+    if (!name || !email || !message) return res.status(400).json({ error: 'All fields are required.' });
 
     if (!resendApiKey) {
-        console.log(`[CONTACT DEMO] Name: ${name}, Email: ${email}, Message: ${message}`);
-        return res.json({ success: true, message: 'Message received (demo mode). Please set RESEND_API_KEY in .env.' });
+        return res.json({ success: true, message: 'Message received (demo mode).' });
     }
 
     try {
-        const { data, error } = await resend.emails.send({
+        const { error } = await resend.emails.send({
             from: FROM_EMAIL,
             to: [TO_EMAIL],
             subject: `New poetry message from ${name}`,
             reply_to: email,
-            html: `<h3>New message</h3><p><strong>Name:</strong> ${escapeHtml(name)}</p><p><strong>Email:</strong> ${escapeHtml(email)}</p><p><strong>Message:</strong><br>${escapeHtml(message).replace(/\n/g, '<br>')}</p>`,
+            html: `<p><strong>Name:</strong> ${escapeHtml(name)}</p><p><strong>Email:</strong> ${escapeHtml(email)}</p><p><strong>Message:</strong><br>${escapeHtml(message).replace(/\n/g, '<br>')}</p>`,
             text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`
         });
         if (error) throw error;
         res.json({ success: true, message: 'Message sent successfully!' });
     } catch (err) {
-        console.error('Email error:', err);
-        res.status(500).json({ error: 'Failed to send message. Please try again later.' });
+        res.status(500).json({ error: 'Failed to send message.' });
     }
 });
 
@@ -184,11 +173,11 @@ function escapeHtml(str) {
     return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
 }
 
-// Serve frontend
 app.get('*', (req, res) => {
     res.sendFile(path.join(process.cwd(), 'index.html'));
 });
 
+// Start Server locally
 if (require.main === module) {
     app.listen(PORT, async () => {
         console.log(`✨ Server running at http://localhost:${PORT}`);
