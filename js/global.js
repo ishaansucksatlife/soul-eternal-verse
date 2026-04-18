@@ -8,7 +8,6 @@ window.showModule = function(moduleName) {
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
     
-    // Handle reading progress bar
     const progressBar = document.getElementById('readingProgress');
     if (progressBar) {
         if (moduleName === 'poem-detail') {
@@ -31,12 +30,10 @@ async function preloadAll() {
     if (!loader) return;
     
     try {
-        // 1. Fetch poetry data
         const dataRes = await fetch('/api/data');
         if (!dataRes.ok) throw new Error(`HTTP ${dataRes.status}`);
         window.appState.appData = await dataRes.json();
 
-        // 2. Fetch module assets
         const modulePromises = modules.map(async (moduleName) => {
             const [htmlRes, cssRes, jsRes] = await Promise.all([
                 fetch(`/modules/${moduleName}/${moduleName}.html`),
@@ -51,7 +48,6 @@ async function preloadAll() {
         
         const modulesData = await Promise.all(modulePromises);
         
-        // 3. Module to DOM injection
         for (const { moduleName, html, css, js } of modulesData) {
             const container = document.getElementById(`module-${moduleName}`);
             if (container) container.innerHTML = html;
@@ -61,19 +57,20 @@ async function preloadAll() {
                 style.setAttribute('data-module', moduleName);
                 document.head.appendChild(style);
             }
-            const script = document.createElement('script');
-            script.textContent = js;
-            script.setAttribute('data-module', moduleName);
-            document.body.appendChild(script);
+            if (js && !js.trim().startsWith('<!DOCTYPE') && !js.trim().startsWith('<html')) {
+                const script = document.createElement('script');
+                script.textContent = js;
+                script.setAttribute('data-module', moduleName);
+                document.body.appendChild(script);
+            } else {
+                console.warn(`Skipping invalid JS for module: ${moduleName}`);
+            }
         }
         
-        // 4. Loading Screen Hider
         loader.classList.add('hide');
         
-        // 5. Initialize custom modal system
         initModal();
         
-        // 6. Force home module
         window.location.hash = 'home';
         window.showModule('home');
         
@@ -87,7 +84,6 @@ async function preloadAll() {
     }
 }
 
-// Navigation listeners
 document.querySelectorAll('[data-module]').forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
@@ -105,7 +101,6 @@ window.addEventListener('hashchange', () => {
     window.showModule(module);
 });
 
-// Theme toggle
 const themeToggle = document.getElementById('themeToggle');
 if (themeToggle) {
     const isDark = document.body.classList.contains('dark-mode');
@@ -118,14 +113,12 @@ if (themeToggle) {
     };
 }
 
-// Back to top
 const backBtn = document.getElementById('backToTop');
 if (backBtn) {
     window.onscroll = () => backBtn.classList.toggle('visible', window.scrollY > 500);
     backBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Random poem
 document.getElementById('randomPoemBtn')?.addEventListener('click', async () => {
     if (!window.appState.appData) return;
     const poems = window.appState.appData.allPoems;
@@ -140,12 +133,10 @@ document.getElementById('randomPoemBtn')?.addEventListener('click', async () => 
     }
 });
 
-// Focus mode close
 document.getElementById('closeFocus')?.addEventListener('click', () => {
     document.getElementById('focusMode')?.classList.remove('active');
 });
 
-// Anti Copy & Anti Dev Tools
 document.addEventListener('contextmenu', function(e) {
     e.preventDefault();
     return false;
@@ -226,7 +217,6 @@ document.addEventListener('mouseup', function() {
     document.body.style.cursor = 'url("/cursors/static.cur"), auto';
 });
 
-// Custom Modal System
 let modal = null;
 let modalCallback = null;
 
@@ -329,5 +319,4 @@ window.showPrompt = function(message, onOk, onCancel, title = 'Input', defaultVa
     modal.classList.add('active');
 };
 
-// Preloading
 preloadAll();
