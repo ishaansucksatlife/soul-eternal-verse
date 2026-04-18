@@ -1,0 +1,19 @@
+{
+  "name": "soul-poetry-modular",
+  "version": "1.0.0",
+  "description": "Modular poetry website with contact form via Resend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "compression": "^1.7.4",
+    "dotenv": "^17.4.2",
+    "express": "^4.22.1",
+    "resend": "^3.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
