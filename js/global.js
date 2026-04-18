@@ -57,7 +57,7 @@ async function preloadAll() {
                 style.setAttribute('data-module', moduleName);
                 document.head.appendChild(style);
             }
-            if (js && !js.trim().startsWith('<!DOCTYPE') && !js.trim().startsWith('<html')) {
+            if (js && (js.trim().startsWith('(') || js.trim().startsWith('//') || js.trim().startsWith('window') || js.trim().startsWith('function'))) {
                 const script = document.createElement('script');
                 script.textContent = js;
                 script.setAttribute('data-module', moduleName);
@@ -74,7 +74,6 @@ async function preloadAll() {
         }, 50);
         
     } catch (err) {
-        console.error('Preload failed:', err);
         loader.innerHTML = '<div class="loading-text">Failed to load. Please refresh.</div>';
     }
 }
