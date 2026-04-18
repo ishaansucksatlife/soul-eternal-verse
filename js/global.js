@@ -62,18 +62,13 @@ async function preloadAll() {
                 script.textContent = js;
                 script.setAttribute('data-module', moduleName);
                 document.body.appendChild(script);
-            } else {
-                console.warn(`Skipping invalid JS for module: ${moduleName}`);
             }
         }
         
         loader.classList.add('hide');
-        
         initModal();
-        
         window.location.hash = 'home';
         window.showModule('home');
-        
         setTimeout(() => {
             document.body.style.cursor = 'url("/cursors/static.cur"), auto';
         }, 50);
