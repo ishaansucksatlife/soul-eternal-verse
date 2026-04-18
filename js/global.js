@@ -57,12 +57,10 @@ async function preloadAll() {
                 style.setAttribute('data-module', moduleName);
                 document.head.appendChild(style);
             }
-            if (js && (js.trim().startsWith('(') || js.trim().startsWith('//') || js.trim().startsWith('window') || js.trim().startsWith('function'))) {
-                const script = document.createElement('script');
-                script.textContent = js;
-                script.setAttribute('data-module', moduleName);
-                document.body.appendChild(script);
-            }
+            const script = document.createElement('script');
+            script.textContent = js;
+            script.setAttribute('data-module', moduleName);
+            document.body.appendChild(script);
         }
         
         loader.classList.add('hide');
@@ -74,6 +72,7 @@ async function preloadAll() {
         }, 50);
         
     } catch (err) {
+        console.error('Preload failed:', err);
         loader.innerHTML = '<div class="loading-text">Failed to load. Please refresh.</div>';
     }
 }
