@@ -18,6 +18,7 @@
     border: 1px solid var(--border);
     transition: var(--transition);
     box-shadow: var(--shadow-sm);
+    position: relative;
 }
 .contact-card:hover {
     transform: translateY(-5px);
@@ -116,6 +117,64 @@
     text-align: center;
     opacity: 0.7;
     margin-top: 0.5rem;
+}
+
+.copy-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    color: var(--text-soft);
+    font-size: 1rem;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, background 0.2s;
+}
+.copy-btn:hover {
+    color: var(--accent);
+    background: rgba(var(--accent-rgb), 0.1);
+}
+.copy-btn.copied {
+    color: #2e7d32;
+    pointer-events: none;
+}
+
+.shake {
+    animation: shake 0.4s ease;
+    border-color: #c62828 !important;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+}
+
+.entrance-item {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+}
+.contact-card:nth-child(1) { animation-delay: 0.2s; }
+.contact-card:nth-child(2) { animation-delay: 0.35s; }
+.contact-card:nth-child(3) { animation-delay: 0.5s; }
+.contact-form-container { animation-delay: 0.65s; }
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .back-btn {

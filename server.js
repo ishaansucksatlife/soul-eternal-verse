@@ -64,6 +64,14 @@ async function scanWorks() {
             const description = await readDescription(path.join(collectionPath, 'cdes.txt'));
             collectionTags.forEach(tag => allCollectionTags.add(tag));
 
+            // ---------- Collection order (corder.txt) ----------
+            let order = 0;
+            try {
+                const orderContent = await fs.readFile(path.join(collectionPath, 'corder.txt'), 'utf-8');
+                const parsed = parseInt(orderContent.trim(), 10);
+                if (!isNaN(parsed)) order = parsed;
+            } catch {}
+
             let hasCover = false;
             try { await fs.access(path.join(collectionPath, 'c-cover.png')); hasCover = true; } catch {}
 
@@ -75,6 +83,14 @@ async function scanWorks() {
                 const poemTags = await readTagsFile(path.join(poemFolderPath, 'ptag.txt'));
                 const poemContent = await readPoemContent(poemFolderPath);
                 const { wordCount, readingTime } = computeStats(poemContent);
+
+                // ---------- Poem order (porder.txt) ----------
+                let poemOrder = 0;
+                try {
+                    const poemOrderContent = await fs.readFile(path.join(poemFolderPath, 'porder.txt'), 'utf-8');
+                    const parsed = parseInt(poemOrderContent.trim(), 10);
+                    if (!isNaN(parsed)) poemOrder = parsed;
+                } catch {}
 
                 let preview = await readPoemDescription(poemFolderPath);
                 if (!preview) {
@@ -90,7 +106,8 @@ async function scanWorks() {
                     preview: preview,
                     wordCount: wordCount,
                     readingTime: readingTime,
-                    hasCover: hasPoemCover
+                    hasCover: hasPoemCover,
+                    order: poemOrder          // <-- added
                 };
                 poems.push(poemObj);
 
@@ -101,7 +118,8 @@ async function scanWorks() {
                     preview: preview,
                     wordCount: wordCount,
                     readingTime: readingTime,
-                    hasCover: hasPoemCover
+                    hasCover: hasPoemCover,
+                    order: poemOrder          // <-- added
                 });
             }
             collections.push({
@@ -109,7 +127,8 @@ async function scanWorks() {
                 description: description,
                 tags: collectionTags,
                 poems: poems,
-                hasCover: hasCover
+                hasCover: hasCover,
+                order: order                  // already there
             });
         }
     } catch (err) {

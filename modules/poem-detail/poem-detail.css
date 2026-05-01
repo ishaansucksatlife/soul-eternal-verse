@@ -1,3 +1,13 @@
+/* ------- Animations ------- */
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-in {
+    animation: fadeSlideUp 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+}
+
+/* ------- Toolbar ------- */
 .poem-toolbar {
     display: flex;
     justify-content: space-between;
@@ -42,12 +52,15 @@
 .focus-toggle:hover {
     background: var(--accent);
 }
+
+/* ------- Navigation buttons ------- */
 .poem-nav-buttons {
     display: flex;
     justify-content: center;
     gap: 2rem;
     max-width: 840px;
     margin: 0 auto 1.5rem;
+    flex-wrap: wrap;
 }
 .poem-nav-buttons button {
     background: var(--primary);
@@ -57,10 +70,28 @@
     border-radius: 40px;
     cursor: pointer;
     font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
 }
 .poem-nav-buttons button:hover {
     background: var(--accent);
 }
+.poem-nav-buttons .nav-text {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    font-size: 0.9rem;
+}
+.poem-nav-buttons button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ------- Detail container ------- */
 .poem-detail-container {
     max-width: 840px;
     margin: 0 auto;
@@ -69,6 +100,7 @@
     padding: 2rem;
     box-shadow: var(--shadow-lg);
     border: 1px solid var(--border);
+    position: relative;
 }
 .poem-detail {
     position: relative;
@@ -77,6 +109,25 @@
     padding-right: 8px;
     user-select: none;
 }
+
+/* ------- Local reading progress bar ------- */
+#poemReadingProgress {
+    width: 100%;
+    height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+#poemReadingProgressBar {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    transition: width 0.1s linear;
+    border-radius: 4px;
+}
+
+/* ------- Poem content ------- */
 .poem-detail-title {
     font-family: 'Playfair Display', serif;
     font-size: 2.6rem;
@@ -135,21 +186,116 @@
     to { transform: rotate(360deg); }
 }
 
+/* ------- Speak highlight (word‑by‑word) ------- */
+.word {
+    transition: background-color 0.2s, color 0.2s;
+    border-radius: 4px;
+    padding: 0 1px;
+}
+.word.speaking {
+    background-color: var(--accent);
+    color: white;
+}
+
+/* ------- Scroll to top button ------- */
+.scroll-top-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s, background 0.2s;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.scroll-top-btn.visible {
+    opacity: 1;
+    visibility: visible;
+}
+.scroll-top-btn:hover {
+    background: var(--accent);
+}
+
+/* ------- Poem‑detail focus overlay ------- */
+.poem-focus-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 2001;
+    padding: 2rem;
+    align-items: center;
+    justify-content: center;
+}
+.poem-focus-overlay.active {
+    display: flex;
+}
+.poem-focus-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    z-index: 2002;
+    transition: color 0.2s;
+}
+.poem-focus-close-btn:hover {
+    color: var(--accent);
+}
+.poem-focus-content {
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: var(--card);
+    border-radius: 24px;
+    padding: 2rem;
+    font-family: 'Crimson Text', serif;
+    color: var(--text);
+}
+.poem-focus-content .poem-content {
+    font-size: 1.8rem;
+    line-height: 2.4;
+    color: inherit;
+}
+
+/* ------- Content load animation ------- */
+.poem-detail.animate-content {
+    animation: contentFadeIn 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+}
+
+@keyframes contentFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ------- Responsive ------- */
 @media (max-width: 768px) {
-    .poem-detail-title {
-        font-size: 2rem;
-    }
-    .poem-content {
-        font-size: 1.1rem;
-    }
-    .poem-toolbar {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .poem-actions {
-        justify-content: center;
-    }
-    .poem-detail-container {
-        padding: 1rem;
-    }
+    .poem-detail-title { font-size: 2rem; }
+    .poem-content { font-size: 1.1rem; }
+    .poem-toolbar { flex-direction: column; align-items: stretch; }
+    .poem-actions { justify-content: center; }
+    .poem-detail-container { padding: 1rem; }
+    .poem-nav-buttons button { padding: 6px 16px; font-size: 0.9rem; }
+    .scroll-top-btn { bottom: 20px; right: 20px; width: 40px; height: 40px; }
 }

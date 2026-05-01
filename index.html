@@ -22,46 +22,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/global.css">
     <style>
-        /* Loading screen */
-        #loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--bg);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 1rem;
-            transition: opacity 0.4s ease;
-        }
-        #loading-screen.hide {
-            opacity: 0;
-            visibility: hidden;
-        }
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid var(--border);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        .loading-text {
-            font-family: 'Playfair Display', serif;
-            font-size: 1rem;
-            color: var(--accent);
-            letter-spacing: 2px;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
         .module-container { display: none; }
         .module-container.active { display: block; }
     </style>
+    <!-- Preload custom cursor so it never flashes -->
+    <link rel="preload" href="/cursors/static.cur" as="image" type="image/x-icon">
 </head>
 <body>
     <script>
@@ -77,8 +42,10 @@
     </script>
 
     <div id="loading-screen">
-        <div class="loading-spinner"></div>
-        <div class="loading-text">Unfolding verses...</div>
+        <div class="loader-spinner">
+            <i class="fas fa-feather-alt loader-feather"></i>
+        </div>
+        <div class="loading-text">Unfolding verses…</div>
     </div>
 
     <div class="reading-progress" id="readingProgress">
@@ -92,7 +59,7 @@
 
     <header>
         <div class="container header-content">
-            <div class="logo">Soul</div>
+            <a class="logo" data-module="home">Soul</a>
             <nav>
                 <ul>
                     <li><a id="nav-home" class="active" data-module="home">Home</a></li>
@@ -117,7 +84,7 @@
 
     <footer>
         <div class="container">
-            <p>© Soul · Eternal Verse — crafted with <i class="fas fa-heart"></i> for poetry lovers</p>
+            <p>© Soul — Eternal Verse</p>
         </div>
     </footer>
 

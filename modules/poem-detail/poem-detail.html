@@ -1,9 +1,9 @@
 <div class="nav-controls">
     <a href="#" id="back-to-collection-link" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Collection</a>
     <div class="breadcrumb">
-        <a href="#home">Home</a> <span>></span>
-        <a href="#collections">Collections</a> <span>></span>
-        <a href="#" id="collection-breadcrumb-link">Collection</a> <span>></span>
+        <a href="#home">Home</a> <span>›</span>
+        <a href="#collections">Collections</a> <span>›</span>
+        <a href="#" id="collection-breadcrumb-link">Collection</a> <span>›</span>
         <span id="current-poem-title">Poem</span>
     </div>
 </div>
@@ -19,12 +19,22 @@
 </div>
 
 <div class="poem-nav-buttons" id="poemNavButtons">
-    <button id="prevPoemBtn"><i class="fas fa-chevron-left"></i> Previous</button>
-    <button id="nextPoemBtn">Next <i class="fas fa-chevron-right"></i></button>
+    <button id="prevPoemBtn"><i class="fas fa-chevron-left"></i> <span class="nav-text"></span></button>
+    <button id="nextPoemBtn"><span class="nav-text"></span> <i class="fas fa-chevron-right"></i></button>
 </div>
 
-<div class="poem-detail-container">
+<div class="poem-detail-container animate-in">
+    <div class="reading-progress" id="poemReadingProgress">
+        <div class="reading-progress-bar" id="poemReadingProgressBar"></div>
+    </div>
     <div class="poem-detail" id="poem-detail">
         <div class="loading"><div class="spinner"></div>Unfolding poem...</div>
     </div>
+</div>
+
+<button class="scroll-top-btn" id="scrollTopBtn" title="Scroll to top"><i class="fas fa-arrow-up"></i></button>
+
+<div class="poem-focus-overlay" id="poemFocusOverlay">
+    <button class="poem-focus-close-btn" id="poemFocusCloseBtn"><i class="fas fa-times"></i></button>
+    <div class="poem-focus-content" id="poemFocusContent"></div>
 </div>

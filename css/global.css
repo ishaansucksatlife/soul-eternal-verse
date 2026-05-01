@@ -122,6 +122,8 @@ header {
     -webkit-background-clip: text;
     color: transparent;
     transition: transform 0.2s;
+    text-decoration: none;
+    cursor: pointer;
 }
 .logo:hover {
     transform: scale(1.02);
@@ -194,6 +196,24 @@ nav ul li a:hover {
 }
 .module-container.active {
     display: block;
+}
+.module-container.animate-in {
+    animation: moduleFadeIn 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+}
+.module-container.animate-in,
+.module-container.animate-in * {
+    cursor: url('/cursors/static.cur'), auto !important;
+}
+
+@keyframes moduleFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .reading-progress {
@@ -305,96 +325,76 @@ footer i {
     margin: 0 4px;
 }
 
+/* ========== Loading Screen ========== */
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--bg);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+#loading-screen.hide {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loader-spinner {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: var(--accent);
+    border-right-color: var(--accent);
+    animation: spin 1.2s linear infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.loader-feather {
+    font-size: 2rem;
+    color: var(--accent);
+    position: absolute;
+    animation: featherFloat 3s ease-in-out infinite;
+}
+
+.loading-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--accent);
+    letter-spacing: 2px;
+    opacity: 0;
+    animation: fadeTextIn 1.2s ease forwards 0.5s;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes featherFloat {
+    0%, 100% { transform: translateY(0); opacity: 0.9; }
+    50% { transform: translateY(-6px); opacity: 0.6; }
+}
+
+@keyframes fadeTextIn {
+    to { opacity: 1; }
+}
+
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
 }
 
-@media (max-width: 992px) {
-    .container {
-        padding: 0 20px;
-    }
-}
-@media (max-width: 768px) {
-    .header-content {
-        flex-direction: column;
-        text-align: center;
-    }
-    .module-container {
-        padding: 160px 20px 60px 20px;
-    }
-    .back-to-top {
-        bottom: 20px;
-        left: 20px;
-        width: 42px;
-        height: 42px;
-    }
-}
-
-/* Custom cursors */
-html, body, * {
-    cursor: url('/cursors/static.cur'), auto !important;
-}
-html:active, body:active, *:active {
-    cursor: url('/cursors/static.cur'), auto !important;
-}
-html:hover, body:hover, *:hover {
-    cursor: url('/cursors/static.cur'), auto !important;
-}
-
-/* Clickable elements – select cursor */
-a, button, 
-.collection-card, .poem-item, .filter-tag, 
-.clear-filters-btn, .back-btn, .nav-btn, 
-.theme-toggle, .random-poem-btn, .action-icon, 
-.focus-toggle, .poem-nav-buttons button, 
-.submit-btn, .featured-poem-card, .stat-card,
-.search-btn, .filter-toggle, .close-focus, 
-.back-to-top, .nav-controls a, .breadcrumb a,
-[data-module], .logo, nav ul li a, 
-.collection-card *, .poem-item *, .tag,
-.collection-card .collection-title, .poem-title,
-.poem-item .poem-title, .stat-card .stat-number,
-.featured-poem-card strong, .featured-poem-card div,
-.back-btn i, .nav-btn i, .action-icon i,
-.focus-toggle i, .submit-btn i,
-.collection-card .collection-info p,
-.poem-item .poem-preview,
-.filter-panel .filter-tag,
-.clear-filters-btn,
-.poem-nav-buttons button i,
-a:hover, button:hover, .collection-card:hover, .poem-item:hover,
-.filter-tag:hover, .back-btn:hover, .nav-btn:hover,
-.theme-toggle:hover, .random-poem-btn:hover, .action-icon:hover,
-.focus-toggle:hover, .poem-nav-buttons button:hover,
-.submit-btn:hover, .featured-poem-card:hover, .stat-card:hover,
-.search-btn:hover, .filter-toggle:hover, .close-focus:hover,
-.back-to-top:hover, .clear-filters-btn:hover,
-a:active, button:active, .collection-card:active, .poem-item:active,
-.filter-tag:active, .back-btn:active, .nav-btn:active,
-.theme-toggle:active, .random-poem-btn:active, .action-icon:active,
-.focus-toggle:active, .poem-nav-buttons button:active,
-.submit-btn:active, .featured-poem-card:active, .stat-card:active,
-.search-btn:active, .filter-toggle:active, .close-focus:active,
-.back-to-top:active, .clear-filters-btn:active {
-    cursor: url('/cursors/select.cur'), pointer !important;
-}
-
-/* Text input fields – writing cursor */
-input, textarea, [contenteditable="true"], 
-input:focus, textarea:focus, 
-input:active, textarea:active,
-input:hover, textarea:hover,
-.search-box input, .form-group input, .form-group textarea,
-#contactName, #contactEmail, #contactMessage,
-#collection-search, #poem-search,
-#contactForm input, #contactForm textarea,
-input[type="text"], input[type="email"], input[type="password"],
-textarea, .search-box input, .contact-form input, .contact-form textarea {
-    cursor: url('/cursors/writing.cur'), text !important;
-}
-
-/* Custom Modal */
+/* ========== Custom Modal ========== */
 .custom-modal {
     position: fixed;
     top: 0;
@@ -498,6 +498,7 @@ textarea, .search-box input, .contact-form input, .contact-form textarea {
 .modal-btn.cancel-btn:hover {
     background: var(--border);
 }
+
 @keyframes fadeSlideUp {
     from {
         opacity: 0;
@@ -506,5 +507,88 @@ textarea, .search-box input, .contact-form input, .contact-form textarea {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* Custom cursors */
+html, body, * {
+    cursor: url('/cursors/static.cur'), auto !important;
+}
+html:active, body:active, *:active {
+    cursor: url('/cursors/static.cur'), auto !important;
+}
+html:hover, body:hover, *:hover {
+    cursor: url('/cursors/static.cur'), auto !important;
+}
+
+a, button, 
+.collection-card, .poem-item, .filter-tag, 
+.clear-filters-btn, .back-btn, .nav-btn, 
+.theme-toggle, .random-poem-btn, .action-icon, 
+.focus-toggle, .poem-nav-buttons button, 
+.submit-btn, .featured-poem-card, .stat-card,
+.search-btn, .filter-toggle, .close-focus, 
+.back-to-top, .nav-controls a, .breadcrumb a,
+[data-module], .logo, nav ul li a, 
+.collection-card *, .poem-item *, .tag,
+.collection-card .collection-title, .poem-title,
+.poem-item .poem-title, .stat-card .stat-number,
+.featured-poem-card strong, .featured-poem-card div,
+.back-btn i, .nav-btn i, .action-icon i,
+.focus-toggle i, .submit-btn i,
+.collection-card .collection-info p,
+.poem-item .poem-preview,
+.filter-panel .filter-tag,
+.clear-filters-btn,
+.poem-nav-buttons button i,
+a:hover, button:hover, .collection-card:hover, .poem-item:hover,
+.filter-tag:hover, .back-btn:hover, .nav-btn:hover,
+.theme-toggle:hover, .random-poem-btn:hover, .action-icon:hover,
+.focus-toggle:hover, .poem-nav-buttons button:hover,
+.submit-btn:hover, .featured-poem-card:hover, .stat-card:hover,
+.search-btn:hover, .filter-toggle:hover, .close-focus:hover,
+.back-to-top:hover, .clear-filters-btn:hover,
+a:active, button:active, .collection-card:active, .poem-item:active,
+.filter-tag:active, .back-btn:active, .nav-btn:active,
+.theme-toggle:active, .random-poem-btn:active, .action-icon:active,
+.focus-toggle:active, .poem-nav-buttons button:active,
+.submit-btn:active, .featured-poem-card:active, .stat-card:active,
+.search-btn:active, .filter-toggle:active, .close-focus:active,
+.back-to-top:active, .clear-filters-btn:active {
+    cursor: url('/cursors/select.cur'), pointer !important;
+}
+
+input, textarea, [contenteditable="true"], 
+input:focus, textarea:focus, 
+input:active, textarea:active,
+input:hover, textarea:hover,
+.search-box input, .form-group input, .form-group textarea,
+#contactName, #contactEmail, #contactMessage,
+#collection-search, #poem-search,
+#contactForm input, #contactForm textarea,
+input[type="text"], input[type="email"], input[type="password"],
+textarea, .search-box input, .contact-form input, .contact-form textarea {
+    cursor: url('/cursors/writing.cur'), text !important;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .container {
+        padding: 0 20px;
+    }
+}
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    .module-container {
+        padding: 160px 20px 60px 20px;
+    }
+    .back-to-top {
+        bottom: 20px;
+        left: 20px;
+        width: 42px;
+        height: 42px;
     }
 }

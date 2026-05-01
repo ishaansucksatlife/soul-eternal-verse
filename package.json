@@ -9,7 +9,7 @@
     "vercel-build": "echo Build completed"
   },
   "dependencies": {
-    "compression": "^1.7.4",
+    "compression": "^1.8.1",
     "dotenv": "^16.3.1",
     "express": "^4.22.1",
     "resend": "^3.0.0"

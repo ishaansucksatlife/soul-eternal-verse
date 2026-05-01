@@ -1,4 +1,3 @@
-/* Homepage */
 .profile-hero {
     background: var(--card);
     border-radius: 40px;
@@ -40,6 +39,33 @@
     z-index: 2;
 }
 
+.profile-content > * {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+}
+
+.profile-content > *:nth-child(1) { animation-delay: 0.1s; }
+.profile-content > *:nth-child(2) { animation-delay: 0.15s; }
+.profile-content > *:nth-child(3) { animation-delay: 0.2s; }
+.profile-content > *:nth-child(4) { animation-delay: 0.25s; }
+.profile-content > *:nth-child(5) { animation-delay: 0.3s; }
+.profile-content > *:nth-child(6) { animation-delay: 0.4s; }
+.profile-content > *:nth-child(7) { animation-delay: 0.5s; }
+.profile-content > *:nth-child(8) { animation-delay: 0.6s; }
+.profile-content > *:nth-child(9) { animation-delay: 0.7s; }
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .profile-pic {
     width: 168px;
     height: 168px;
@@ -61,7 +87,6 @@
     object-fit: cover;
 }
 
-/*Typography containers */
 .profile-name {
     font-family: 'Playfair Display', serif;
     font-size: 3.4rem;
@@ -91,6 +116,23 @@
     border: 1px solid var(--border);
 }
 
+.greeting {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 0.75rem;
+    background: rgba(var(--accent-rgb), 0.1);
+    display: block;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0.3rem 1.5rem;
+    border-radius: 60px;
+    backdrop-filter: blur(4px);
+    border: 1px solid var(--border);
+    font-family: 'Playfair Display', serif;
+}
+
 .profile-bio {
     font-size: 1.2rem;
     max-width: 600px;
@@ -106,7 +148,6 @@
     width: fit-content;
 }
 
-/* Stats cards*/
 .stats-grid {
     display: flex;
     justify-content: center;
@@ -149,7 +190,6 @@
     margin-top: 4px;
 }
 
-/* Featured poem*/
 .featured-showcase {
     max-width: 580px;
     margin: 2rem auto;
@@ -208,7 +248,6 @@
     font-style: italic;
 }
 
-/* Quote */
 .home-quote {
     max-width: 550px;
     margin: 2rem auto;
@@ -239,7 +278,56 @@
     font-weight: 500;
 }
 
-/* Navigation buttons */
+.home-quote .quote-text-container {
+    position: relative;
+    flex: 1;
+    min-height: 2.2em;
+    display: flex;
+    align-items: center;
+}
+
+.quote-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    text-align: center;
+}
+
+.quote-text.active {
+    opacity: 1;
+    position: relative;
+}
+
+.featured-poem-card.poem-enter-active {
+    animation: poemReveal 0.6s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+}
+
+@keyframes poemReveal {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.featured-loading {
+    opacity: 0.7;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.4; }
+    50% { opacity: 0.9; }
+    100% { opacity: 0.4; }
+}
+
 .nav-buttons {
     display: flex;
     justify-content: center;
@@ -292,7 +380,6 @@
     transform: translateX(4px);
 }
 
-/* Responsive */
 @media (max-width: 992px) {
     .profile-content {
         padding: 0 32px 48px;
@@ -329,6 +416,10 @@
     .profile-bio {
         font-size: 1rem;
         padding: 0.4rem 1.2rem;
+    }
+    .greeting {
+        font-size: 1rem;
+        padding: 0.3rem 1.2rem;
     }
     .stats-grid {
         gap: 1rem;

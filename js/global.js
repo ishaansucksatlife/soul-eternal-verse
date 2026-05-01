@@ -1,13 +1,25 @@
 window.showModule = function(moduleName) {
-    document.querySelectorAll('.module-container').forEach(c => c.classList.remove('active'));
-    const activeContainer = document.getElementById(`module-${moduleName}`);
-    if (activeContainer) activeContainer.classList.add('active');
-    document.querySelectorAll('[data-module]').forEach(link => {
-        if (link.dataset.module === moduleName) link.classList.add('active');
-        else link.classList.remove('active');
+    document.querySelectorAll('.module-container').forEach(c => {
+        c.classList.remove('active', 'animate-in');
     });
+
+    const activeContainer = document.getElementById(`module-${moduleName}`);
+    if (!activeContainer) return;
+
+    // If the module is already active, don't animate it again.
+    const wasActive = activeContainer.classList.contains('active');
+    activeContainer.classList.add('active');
+
+    document.querySelectorAll('[data-module]').forEach(link => {
+        if (link.dataset.module === moduleName) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+    });
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    
+
     const progressBar = document.getElementById('readingProgress');
     if (progressBar) {
         if (moduleName === 'poem-detail') {
@@ -19,7 +31,15 @@ window.showModule = function(moduleName) {
             if (progressFill) progressFill.style.width = '0%';
         }
     }
-    
+
+    if (!wasActive) {
+        void activeContainer.offsetWidth;
+        activeContainer.classList.add('animate-in');
+        activeContainer.addEventListener('animationend', function() {
+            this.classList.remove('animate-in');
+        }, { once: true });
+    }
+
     window.dispatchEvent(new CustomEvent('moduleShown', { detail: { module: moduleName } }));
 };
 
@@ -28,11 +48,14 @@ const modules = ['home', 'collections', 'about', 'contact', 'poems', 'poem-detai
 async function preloadAll() {
     const loader = document.getElementById('loading-screen');
     if (!loader) return;
-    
+
     try {
         const dataRes = await fetch('/api/data');
         if (!dataRes.ok) throw new Error(`HTTP ${dataRes.status}`);
         window.appState.appData = await dataRes.json();
+
+        // Preload all cover images in the background
+        preloadAllImages(window.appState.appData);
 
         const modulePromises = modules.map(async (moduleName) => {
             const [htmlRes, cssRes, jsRes] = await Promise.all([
@@ -45,9 +68,9 @@ async function preloadAll() {
             const js = await jsRes.text();
             return { moduleName, html, css, js };
         });
-        
+
         const modulesData = await Promise.all(modulePromises);
-        
+
         for (const { moduleName, html, css, js } of modulesData) {
             const container = document.getElementById(`module-${moduleName}`);
             if (container) container.innerHTML = html;
@@ -62,7 +85,7 @@ async function preloadAll() {
             script.setAttribute('data-module', moduleName);
             document.body.appendChild(script);
         }
-        
+
         loader.classList.add('hide');
         initModal();
         window.location.hash = 'home';
@@ -70,11 +93,41 @@ async function preloadAll() {
         setTimeout(() => {
             document.body.style.cursor = 'url("/cursors/static.cur"), auto';
         }, 50);
-        
+
     } catch (err) {
         console.error('Preload failed:', err);
         loader.innerHTML = '<div class="loading-text">Failed to load. Please refresh.</div>';
     }
+}
+
+/**
+ * Preloads every cover image so they appear instantly when needed.
+ */
+function preloadAllImages(data) {
+    const urls = [];
+
+    // Static assets
+    urls.push('/banner-profile/banner.png');
+    urls.push('/banner-profile/profile.png');
+
+    // Collection covers
+    data.collections.forEach(coll => {
+        if (coll.hasCover) {
+            urls.push(`/works/${encodeURIComponent(coll.name)}/c-cover.png`);
+        }
+    });
+
+    // Poem covers
+    data.allPoems.forEach(poem => {
+        if (poem.hasCover) {
+            urls.push(`/works/${encodeURIComponent(poem.collectionName)}/${encodeURIComponent(poem.poemName)}/p-cover.png`);
+        }
+    });
+
+    urls.forEach(url => {
+        const img = new Image();
+        img.src = url;
+    });
 }
 
 document.querySelectorAll('[data-module]').forEach(link => {
@@ -108,7 +161,9 @@ if (themeToggle) {
 
 const backBtn = document.getElementById('backToTop');
 if (backBtn) {
-    window.onscroll = () => backBtn.classList.toggle('visible', window.scrollY > 500);
+    window.addEventListener('scroll', () => {
+        backBtn.classList.toggle('visible', window.scrollY > 500);
+    });
     backBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 

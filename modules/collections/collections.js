@@ -1,6 +1,16 @@
 (function() {
     let appData = window.appState.appData;
     let selectedTags = new Set();
+    let currentSort = 'newest';
+
+    function init() {
+        if (!appData) {
+            appData = window.appState.appData;
+            if (!appData) return;
+        }
+        renderCollectionTags();
+        renderAllCollections();
+    }
 
     function renderCollectionTags() {
         const container = document.getElementById('collectionFilterTags');
@@ -29,19 +39,17 @@
         });
     }
 
-    function applyTagFilter() {
-        if (selectedTags.size === 0) {
-            renderAllCollections();
-        } else {
-            const filtered = appData.collections.filter(coll =>
-                coll.tags.some(tag => selectedTags.has(tag))
-            );
-            renderCollectionsGrid(filtered);
+    function getSortedCollections() {
+        const colls = [...appData.collections];
+        switch (currentSort) {
+            case 'newest': return colls.sort((a, b) => (b.order ?? 0) - (a.order ?? 0));
+            case 'oldest': return colls.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+            case 'name-asc': return colls.sort((a, b) => a.name.localeCompare(b.name));
+            case 'name-desc': return colls.sort((a, b) => b.name.localeCompare(a.name));
+            case 'poems-desc': return colls.sort((a, b) => b.poems.length - a.poems.length);
+            case 'poems-asc': return colls.sort((a, b) => a.poems.length - b.poems.length);
+            default: return colls;
         }
-    }
-
-    function renderAllCollections() {
-        renderCollectionsGrid(appData.collections);
     }
 
     function renderCollectionsGrid(collections) {
@@ -53,9 +61,11 @@
             return;
         }
         empty.style.display = 'none';
-        grid.innerHTML = collections.map((coll, index) => {
+        grid.innerHTML = collections.map(coll => {
             const coverUrl = coll.hasCover ? `/works/${encodeURIComponent(coll.name)}/c-cover.png` : null;
-            const bgStyle = coverUrl ? `background-image: url('${coverUrl}'); background-size: cover; background-position: center;` : 'background: var(--gradient);';
+            const bgStyle = coverUrl
+                ? `background-image: url('${coverUrl}'); background-size: cover; background-position: center;`
+                : 'background: var(--gradient);';
             return `
                 <div class="collection-card" data-collection-name="${encodeURIComponent(coll.name)}">
                     <div class="collection-img" style="${bgStyle}">
@@ -73,8 +83,17 @@
                 </div>
             `;
         }).join('');
-        
-        document.querySelectorAll('.collection-card').forEach(card => {
+
+        const cards = grid.querySelectorAll('.collection-card');
+        cards.forEach((card, i) => {
+            card.style.animationDelay = `${i * 0.08}s`;
+
+            card.addEventListener('animationend', function() {
+                this.style.opacity = '1';
+                this.style.transform = 'translateY(0) scale(1)';
+                this.style.animation = 'none';
+            }, { once: true });
+
             card.onclick = () => {
                 const collName = decodeURIComponent(card.getAttribute('data-collection-name'));
                 const coll = appData.collections.find(c => c.name === collName);
@@ -87,52 +106,114 @@
         });
     }
 
-    // Search and filter
-    const searchBtn = document.getElementById('search-collections-btn');
-    if (searchBtn) {
-        searchBtn.onclick = () => {
-            const query = document.getElementById('collection-search').value.toLowerCase();
-            const filtered = appData.collections.filter(c =>
+    function renderAllCollections() {
+        renderCollectionsGrid(getSortedCollections());
+    }
+
+    function applyTagFilter() {
+        const sorted = getSortedCollections();
+        if (selectedTags.size === 0) {
+            renderCollectionsGrid(sorted);
+        } else {
+            const filtered = sorted.filter(coll =>
+                coll.tags.some(tag => selectedTags.has(tag))
+            );
+            renderCollectionsGrid(filtered);
+        }
+    }
+
+    const searchInput = document.getElementById('collection-search');
+    const clearBtn = document.getElementById('clear-search-btn');
+
+    function performSearch() {
+        const query = searchInput.value.toLowerCase();
+        let filtered = getSortedCollections();
+        if (query) {
+            filtered = filtered.filter(c =>
                 c.name.toLowerCase().includes(query) ||
                 c.description.toLowerCase().includes(query)
             );
-            renderCollectionsGrid(filtered);
-        };
+        }
+        if (selectedTags.size > 0) {
+            filtered = filtered.filter(c => c.tags.some(t => selectedTags.has(t)));
+        }
+        renderCollectionsGrid(filtered);
     }
-    const searchInput = document.getElementById('collection-search');
+
     if (searchInput) {
         searchInput.addEventListener('input', function() {
-            if (!this.value && selectedTags.size === 0) renderAllCollections();
-            else if (!this.value && selectedTags.size > 0) applyTagFilter();
-            else {
-                const query = this.value.toLowerCase();
-                let filtered = appData.collections.filter(c =>
-                    c.name.toLowerCase().includes(query) ||
-                    c.description.toLowerCase().includes(query)
-                );
-                if (selectedTags.size > 0) {
-                    filtered = filtered.filter(c => c.tags.some(t => selectedTags.has(t)));
-                }
-                renderCollectionsGrid(filtered);
+            clearBtn.classList.toggle('visible', this.value.length > 0);
+            performSearch();
+        });
+    }
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            clearBtn.classList.remove('visible');
+            performSearch();
+        });
+    }
+
+    const searchBtn = document.getElementById('search-collections-btn');
+    if (searchBtn) searchBtn.onclick = performSearch;
+
+    const sortToggleBtn = document.getElementById('sortToggleBtn');
+    const sortDropdown = document.getElementById('sortDropdown');
+    const sortOptions = document.querySelectorAll('.sort-option');
+
+    if (sortToggleBtn && sortDropdown) {
+        sortToggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sortDropdown.classList.toggle('active');
+            const filterPanel = document.getElementById('filterPanel');
+            if (filterPanel) filterPanel.classList.remove('active');
+        });
+        document.addEventListener('click', (e) => {
+            if (!sortToggleBtn.contains(e.target) && !sortDropdown.contains(e.target)) {
+                sortDropdown.classList.remove('active');
             }
+        });
+        sortOptions.forEach(opt => {
+            opt.addEventListener('click', () => {
+                sortOptions.forEach(o => o.classList.remove('active'));
+                opt.classList.add('active');
+                currentSort = opt.getAttribute('data-sort');
+                sortDropdown.classList.remove('active');
+                if (selectedTags.size > 0 || searchInput.value.trim()) {
+                    performSearch();
+                } else {
+                    renderAllCollections();
+                }
+            });
         });
     }
 
     const filterToggle = document.getElementById('filterToggle');
+    const filterPanel = document.getElementById('filterPanel');
     if (filterToggle) {
-        filterToggle.onclick = () => {
-            document.getElementById('filterPanel').classList.toggle('active');
+        filterToggle.onclick = (e) => {
+            e.stopPropagation();
+            filterPanel.classList.toggle('active');
+            sortDropdown.classList.remove('active');
         };
     }
+
     const clearFilters = document.getElementById('clearCollectionFilters');
     if (clearFilters) {
         clearFilters.onclick = () => {
             selectedTags.clear();
             document.querySelectorAll('#collectionFilterTags .filter-tag').forEach(btn => btn.classList.remove('active'));
-            renderAllCollections();
+            performSearch();
         };
     }
 
-    renderCollectionTags();
-    renderAllCollections();
+    // Re‑trigger animations every time the module is shown
+    window.addEventListener('moduleShown', (e) => {
+        if (e.detail.module === 'collections') init();
+    });
+
+    // Initial load if already active
+    if (document.getElementById('module-collections')?.classList.contains('active')) {
+        init();
+    }
 })();

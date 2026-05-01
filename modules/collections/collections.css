@@ -74,11 +74,12 @@
 .search-system {
     max-width: 750px;
     margin: 0 auto 2.5rem;
+    position: relative;
 }
 .search-container {
     display: flex;
     gap: 1rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
 }
 .search-box {
     flex: 1;
@@ -106,32 +107,121 @@
 .search-box input:focus {
     outline: none;
 }
-.search-actions {
+
+.clear-search {
+    background: none;
+    border: none;
+    color: var(--text-soft);
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0 12px;
+    display: none;
+    align-items: center;
+    transition: color 0.2s;
+}
+.clear-search.visible {
     display: flex;
 }
-.search-btn, .filter-toggle {
-    background: var(--primary);
-    border: none;
-    padding: 0 24px;
-    color: white;
-    cursor: pointer;
-    transition: background 0.2s;
+.clear-search:hover {
+    color: var(--accent);
+}
+
+.search-actions {
+    display: flex;
+    align-items: stretch;
+}
+
+.sort-btn,
+.filter-toggle,
+.search-btn {
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0 24px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    font-size: 1rem;
+    min-width: 56px;
+    height: 100%;
+    border-left: 1px solid var(--border);
 }
-.search-btn:hover, .filter-toggle:hover {
-    background: var(--accent);
+
+.sort-btn {
+    background: var(--card);
+    color: var(--primary);
 }
+.sort-btn:hover {
+    background: var(--primary);
+    color: white;
+}
+
 .filter-toggle {
     background: var(--card);
     color: var(--primary);
-    border-left: 1px solid var(--border);
 }
 .filter-toggle:hover {
     background: var(--primary);
     color: white;
 }
+
+.search-btn {
+    background: var(--primary);
+    color: white;
+}
+.search-btn:hover {
+    background: var(--accent);
+}
+
+.sort-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background: var(--card);
+    border-radius: 24px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+    padding: 0.5rem 0;
+    min-width: 180px;
+    display: none;
+    z-index: 20;
+    animation: fadeSlide 0.2s ease;
+    backdrop-filter: blur(8px);
+}
+.sort-dropdown.active {
+    display: block;
+}
+.sort-option {
+    padding: 0.8rem 1.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text);
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.sort-option::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: transparent;
+    transition: background 0.2s;
+}
+.sort-option:hover {
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+}
+.sort-option.active {
+    color: var(--accent);
+    background: rgba(var(--accent-rgb), 0.1);
+}
+.sort-option.active::before {
+    background: var(--accent);
+}
+
 .filter-panel {
     background: var(--card);
     border-radius: 24px;
@@ -164,7 +254,8 @@
     font-weight: 600;
     transition: all 0.2s;
 }
-.filter-tag.active, .filter-tag:hover {
+.filter-tag.active,
+.filter-tag:hover {
     background: var(--primary);
     color: white;
     transform: translateY(-2px);
@@ -192,24 +283,50 @@
     gap: 2rem;
     margin: 2rem 0;
 }
+
 .collection-card {
     background: var(--card);
     border-radius: 28px;
-    overflow: hidden;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--border);
+
+    /* -----  DRAMATIC ENTRANCE ANIMATION  ----- */
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+    animation: cardEntrance 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+
+    /* Hover transition (after animation ends) */
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.35s ease;
 }
+
 .collection-card:hover {
-    transform: translateY(-8px);
+    transform: translateY(-8px) !important;
     box-shadow: var(--shadow-hover);
 }
+
+/* Outline on hover (above the image) */
+.collection-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 28px;
+    border: 2px solid transparent;
+    pointer-events: none;
+    transition: border-color 0.35s ease;
+    z-index: 2;
+}
+.collection-card:hover::after {
+    border-color: var(--accent);
+}
+
 .collection-img {
     height: 220px;
     background-size: cover;
     background-position: center;
     position: relative;
+    border-radius: 28px 28px 0 0;
 }
 .collection-overlay {
     background: linear-gradient(0deg, rgba(0,0,0,0.6) 0%, transparent 70%);
@@ -218,6 +335,7 @@
     left: 0;
     right: 0;
     padding: 1.5rem;
+    border-radius: 0 0 28px 28px;
 }
 .collection-title {
     font-family: 'Playfair Display', serif;
@@ -269,35 +387,34 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* ENTRANCE KEYFRAMES */
+@keyframes cardEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
 /* Responsive */
 @media (max-width: 992px) {
-    .collections-grid {
-        gap: 1.5rem;
-    }
+    .collections-grid { gap: 1.5rem; }
 }
 @media (max-width: 768px) {
-    .collections-grid {
-        grid-template-columns: 1fr;
-    }
-    .page-title {
-        font-size: 2rem;
-    }
-    .search-container {
-        flex-direction: column;
-    }
-    .search-box {
-        width: 100%;
-    }
-    .back-btn {
-        padding: 6px 16px;
-        font-size: 0.85rem;
-    }
+    .collections-grid { grid-template-columns: 1fr; }
+    .page-title { font-size: 2rem; }
+    .search-container { flex-direction: column; }
+    .search-box { width: 100%; }
+    .back-btn { padding: 6px 16px; font-size: 0.85rem; }
+    .sort-dropdown { right: auto; left: 0; }
 }
 @media (max-width: 480px) {
-    .collection-title {
-        font-size: 1.4rem;
-    }
-    .collection-info {
-        padding: 1rem;
-    }
+    .collection-title { font-size: 1.4rem; }
+    .collection-info { padding: 1rem; }
+    .sort-btn,
+    .filter-toggle,
+    .search-btn { padding: 0 18px; }
 }

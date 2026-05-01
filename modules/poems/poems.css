@@ -8,14 +8,19 @@
     padding: 1.8rem;
     margin-bottom: 1.8rem;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-    border-left: 5px solid transparent;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.35s ease,
+                border-left-color 0.35s ease;
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--border);
+    border-left: 5px solid transparent;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: poemEntrance 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
 }
 .poem-item:hover {
-    transform: translateX(8px);
-    border-left-color: var(--accent);
+    transform: translateX(8px) !important;
+    border-left-color: var(--accent) !important;
     box-shadow: var(--shadow-md);
 }
 .poem-title {
@@ -55,14 +60,216 @@
 .tag:hover {
     background: var(--accent);
 }
+
+/* ========== Search & Actions ========== */
+.search-system {
+    max-width: 750px;
+    margin: 0 auto 2.5rem;
+    position: relative;
+}
+.search-container {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+.search-box {
+    flex: 1;
+    display: flex;
+    background: var(--card);
+    border-radius: 60px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    transition: var(--transition);
+}
+.search-box:focus-within {
+    box-shadow: var(--shadow-md);
+    border-color: var(--accent);
+}
+.search-box input {
+    flex: 1;
+    padding: 14px 24px;
+    background: transparent;
+    border: none;
+    font-size: 1rem;
+    color: var(--text);
+    font-family: 'Crimson Text', serif;
+}
+.search-box input:focus {
+    outline: none;
+}
+.search-actions {
+    display: flex;
+    align-items: stretch;
+}
+
+.sort-btn,
+.filter-toggle,
+.search-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 24px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    font-size: 1rem;
+    min-width: 56px;
+    height: 100%;
+    border-left: 1px solid var(--border);
+}
+
+.sort-btn {
+    background: var(--card);
+    color: var(--primary);
+}
+.sort-btn:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.filter-toggle {
+    background: var(--card);
+    color: var(--primary);
+}
+.filter-toggle:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.search-btn {
+    background: var(--primary);
+    color: white;
+}
+.search-btn:hover {
+    background: var(--accent);
+}
+
+/* Sort dropdown */
+.sort-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background: var(--card);
+    border-radius: 24px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+    padding: 0.5rem 0;
+    min-width: 180px;
+    display: none;
+    z-index: 20;
+    animation: fadeSlide 0.2s ease;
+    backdrop-filter: blur(8px);
+}
+.sort-dropdown.active {
+    display: block;
+}
+.sort-option {
+    padding: 0.8rem 1.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text);
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.sort-option::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: transparent;
+    transition: background 0.2s;
+}
+.sort-option:hover {
+    background: rgba(var(--accent-rgb), 0.08);
+    color: var(--accent);
+}
+.sort-option.active {
+    color: var(--accent);
+    background: rgba(var(--accent-rgb), 0.1);
+}
+.sort-option.active::before {
+    background: var(--accent);
+}
+
+/* Filter panel */
+.filter-panel {
+    background: var(--card);
+    border-radius: 24px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border);
+    display: none;
+    animation: fadeSlide 0.2s ease;
+}
+.filter-panel.active {
+    display: block;
+}
+.filter-section h4 {
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 1rem;
+    color: var(--accent);
+}
+.filter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.filter-tag {
+    background: var(--bg);
+    padding: 6px 18px;
+    border-radius: 40px;
+    cursor: pointer;
+    border: 1px solid var(--primary);
+    font-weight: 600;
+    transition: all 0.2s;
+}
+.filter-tag.active,
+.filter-tag:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+    border-color: transparent;
+    box-shadow: var(--shadow-sm);
+}
+.clear-filters-btn {
+    margin-top: 1rem;
+    background: none;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 0.85rem;
+    transition: opacity 0.2s;
+}
+.clear-filters-btn:hover {
+    opacity: 0.8;
+}
+
+@keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes poemEntrance {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 @media (max-width: 768px) {
-    .poems-list {
-        max-width: 100%;
-    }
-    .poem-title {
-        font-size: 1.3rem;
-    }
-    .poem-item {
-        padding: 1.2rem;
-    }
+    .poems-list { max-width: 100%; }
+    .poem-title { font-size: 1.3rem; }
+    .poem-item { padding: 1.2rem; }
+    .search-container { flex-direction: column; }
+    .search-box { width: 100%; }
+    .sort-dropdown { right: auto; left: 0; }
+}
+@media (max-width: 480px) {
+    .sort-btn,
+    .filter-toggle,
+    .search-btn { padding: 0 18px; }
 }

@@ -1,6 +1,8 @@
 (function() {
     let currentCollection = null;
     let selectedTags = new Set();
+    let currentSort = 'newest';
+    window.appState.poemsSort = currentSort;
 
     function init() {
         const hash = window.location.hash.slice(1);
@@ -22,7 +24,35 @@
         document.getElementById('collection-title').innerText = currentCollection.name;
         document.getElementById('current-collection-name').innerText = currentCollection.name;
         renderPoemFilterTags(currentCollection.poems);
-        applyPoemTagFilter();
+        applyFilters();
+    }
+
+    function getSortedPoems() {
+        const poems = [...currentCollection.poems];
+        switch (currentSort) {
+            case 'newest': return poems.sort((a, b) => (b.order ?? 0) - (a.order ?? 0));
+            case 'oldest': return poems.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+            case 'name-asc': return poems.sort((a, b) => a.name.localeCompare(b.name));
+            case 'name-desc': return poems.sort((a, b) => b.name.localeCompare(a.name));
+            case 'words-desc': return poems.sort((a, b) => b.wordCount - a.wordCount);
+            case 'words-asc': return poems.sort((a, b) => a.wordCount - b.wordCount);
+            default: return poems;
+        }
+    }
+
+    function applyFilters() {
+        const query = document.getElementById('poem-search')?.value.toLowerCase() || '';
+        let filtered = getSortedPoems();
+        if (query) {
+            filtered = filtered.filter(p =>
+                p.name.toLowerCase().includes(query) ||
+                (p.preview || '').toLowerCase().includes(query)
+            );
+        }
+        if (selectedTags.size > 0) {
+            filtered = filtered.filter(p => p.tags.some(t => selectedTags.has(t)));
+        }
+        renderPoemsList(filtered);
     }
 
     function renderPoemsList(poems) {
@@ -47,7 +77,19 @@
                 <p class="poem-preview">${window.escapeHtml(poem.preview)}</p>
             </div>
         `).join('');
-        document.querySelectorAll('.poem-item').forEach(item => {
+
+        // Clean up the entrance animation after it finishes
+        container.querySelectorAll('.poem-item').forEach(item => {
+            item.addEventListener('animationend', function() {
+                this.style.opacity = '1';
+                this.style.transform = 'translateY(0)';
+                this.style.animation = 'none';
+            }, { once: true });
+        });
+
+        // Click handlers + staggered delay
+        document.querySelectorAll('.poem-item').forEach((item, i) => {
+            item.style.animationDelay = `${i * 0.04}s`;
             item.onclick = () => {
                 const poemName = decodeURIComponent(item.getAttribute('data-poem-name'));
                 const poem = currentCollection.poems.find(p => p.name === poemName);
@@ -70,7 +112,7 @@
             container.innerHTML = '<span style="opacity:0.6;">No tags available</span>';
             return;
         }
-        Array.from(allTags).forEach(tag => {
+        Array.from(allTags).sort().forEach(tag => {
             const btn = document.createElement('div');
             btn.className = 'filter-tag';
             btn.textContent = tag;
@@ -83,76 +125,64 @@
                     selectedTags.add(tag);
                     btn.classList.add('active');
                 }
-                applyPoemTagFilter();
+                applyFilters();
             };
             container.appendChild(btn);
         });
     }
 
-    function applyPoemTagFilter() {
-        if (!currentCollection) return;
-        if (selectedTags.size === 0) {
-            renderPoemsList(currentCollection.poems);
-        } else {
-            const filtered = currentCollection.poems.filter(poem =>
-                poem.tags.some(tag => selectedTags.has(tag))
-            );
-            renderPoemsList(filtered);
-        }
-    }
-
-    // Search integration
-    const searchBtn = document.getElementById('search-poems-btn');
-    if (searchBtn) {
-        searchBtn.onclick = () => {
-            if (!currentCollection) return;
-            const query = document.getElementById('poem-search').value.toLowerCase();
-            let filtered = currentCollection.poems.filter(p =>
-                p.name.toLowerCase().includes(query) ||
-                (p.preview || '').toLowerCase().includes(query)
-            );
-            if (selectedTags.size > 0) {
-                filtered = filtered.filter(p => p.tags.some(t => selectedTags.has(t)));
-            }
-            renderPoemsList(filtered);
-        };
-    }
     const searchInput = document.getElementById('poem-search');
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            if (!currentCollection) return;
-            const query = this.value.toLowerCase();
-            if (!query && selectedTags.size === 0) {
-                renderPoemsList(currentCollection.poems);
-            } else {
-                let filtered = currentCollection.poems.filter(p =>
-                    p.name.toLowerCase().includes(query) ||
-                    (p.preview || '').toLowerCase().includes(query)
-                );
-                if (selectedTags.size > 0) {
-                    filtered = filtered.filter(p => p.tags.some(t => selectedTags.has(t)));
-                }
-                renderPoemsList(filtered);
+    if (searchInput) searchInput.addEventListener('input', applyFilters);
+
+    const searchBtn = document.getElementById('search-poems-btn');
+    if (searchBtn) searchBtn.onclick = applyFilters;
+
+    const sortToggleBtn = document.getElementById('poemSortToggleBtn');
+    const sortDropdown = document.getElementById('poemSortDropdown');
+    const sortOptions = document.querySelectorAll('#poemSortDropdown .sort-option');
+
+    if (sortToggleBtn && sortDropdown) {
+        sortToggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sortDropdown.classList.toggle('active');
+            document.getElementById('poemFilterPanel')?.classList.remove('active');
+        });
+        document.addEventListener('click', (e) => {
+            if (!sortToggleBtn.contains(e.target) && !sortDropdown.contains(e.target)) {
+                sortDropdown.classList.remove('active');
             }
+        });
+        sortOptions.forEach(opt => {
+            opt.addEventListener('click', () => {
+                sortOptions.forEach(o => o.classList.remove('active'));
+                opt.classList.add('active');
+                currentSort = opt.getAttribute('data-sort');
+                window.appState.poemsSort = currentSort;
+                sortDropdown.classList.remove('active');
+                applyFilters();
+            });
         });
     }
 
     const filterToggle = document.getElementById('poemFilterToggle');
+    const filterPanel = document.getElementById('poemFilterPanel');
     if (filterToggle) {
-        filterToggle.onclick = () => {
-            document.getElementById('poemFilterPanel').classList.toggle('active');
-        };
+        filterToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            filterPanel.classList.toggle('active');
+            sortDropdown.classList.remove('active');
+        });
     }
+
     const clearFilters = document.getElementById('clearPoemFilters');
     if (clearFilters) {
         clearFilters.onclick = () => {
             selectedTags.clear();
             document.querySelectorAll('#poemFilterTags .filter-tag').forEach(btn => btn.classList.remove('active'));
-            renderPoemsList(currentCollection.poems);
+            applyFilters();
         };
     }
 
-    // Navigation
     const backToCollections = document.getElementById('back-to-collections');
     if (backToCollections) backToCollections.onclick = () => { window.location.hash = 'collections'; window.showModule('collections'); };
     const breadcrumbHome = document.getElementById('breadcrumb-home-2');

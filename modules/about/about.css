@@ -1,48 +1,32 @@
-.about-container {
-    max-width: 800px;
-    margin: 0 auto;
-    background: var(--card);
-    border-radius: 32px;
-    padding: 2.5rem;
-    box-shadow: var(--shadow-lg);
-    border: 1px solid var(--border);
-    transition: var(--transition);
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+
+#module-about {
+    position: relative;
+    overflow: hidden;              /* ensure icons don’t leak */
 }
 
-.about-quote {
-    text-align: center;
-    font-size: 1.4rem;
-    font-style: italic;
-    padding: 1.5rem;
-    background: var(--bg);
-    border-radius: 24px;
-    margin-bottom: 2rem;
-    color: var(--accent);
-    border: 1px solid var(--border);
-    backdrop-filter: blur(4px);
+.ambient-icons {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
 }
 
-.about-quote i {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-    display: block;
-    color: var(--accent);
-}
-
-.about-content p {
-    margin-bottom: 1.5rem;
-    font-size: 1.1rem;
-    line-height: 1.8;
-    color: var(--text);
-}
-
-.about-signature {
-    margin-top: 2rem;
-    text-align: right;
-    font-size: 1.2rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border);
-    font-family: 'Playfair Display', serif;
+.nav-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 1rem;
+    position: relative;
+    z-index: 1;
 }
 
 .back-btn {
@@ -59,6 +43,8 @@
     transition: var(--transition);
     box-shadow: var(--shadow-sm);
     text-decoration: none;
+    position: relative;
+    z-index: 1;
 }
 .back-btn:hover {
     background: var(--accent);
@@ -68,15 +54,232 @@
     text-decoration: none;
 }
 
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary);
+    font-weight: 600;
+    position: relative;
+    z-index: 1;
+}
+.breadcrumb a {
+    color: var(--primary);
+    text-decoration: none;
+    padding: 5px 12px;
+    border-radius: 30px;
+    transition: background 0.2s;
+}
+.breadcrumb a:hover {
+    background: rgba(139, 90, 43, 0.1);
+    color: var(--accent);
+}
+
+.page-title {
+    text-align: center;
+    font-size: 3rem;
+    font-family: 'Playfair Display', serif;
+    margin: 1rem 0 1rem;
+    color: var(--coffee-dark);
+    position: relative;
+    z-index: 1;
+}
+.page-title:after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 3px;
+    background: var(--accent);
+    margin: 1rem auto;
+    border-radius: 4px;
+}
+
+.about-stats {
+    text-align: center;
+    font-size: 1.1rem;
+    color: var(--primary);
+    margin-bottom: 2rem;
+    font-style: italic;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+    animation-delay: 0.3s;
+    position: relative;
+    z-index: 1;
+}
+
+.about-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--card);
+    border-radius: 40px;
+    padding: 2.5rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border);
+    position: relative;
+    z-index: 1;
+}
+
+.entrance-item {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.8s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+}
+
+.about-quote {
+    animation-delay: 0.5s;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    background: rgba(var(--accent-rgb), 0.08);
+    padding: 1.2rem 1.8rem;
+    border-radius: 60px;
+    backdrop-filter: blur(4px);
+    border: 1px solid var(--border);
+}
+
+.about-quote i {
+    font-size: 1.8rem;
+    color: var(--accent);
+    opacity: 0.8;
+    margin-top: 0.2rem;
+}
+
+.quote-text-container {
+    position: relative;
+    flex: 1;
+    min-height: 2em;
+    display: flex;
+    align-items: center;
+}
+
+.quote-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    margin: 0;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    font-style: italic;
+    font-size: 1.25rem;
+    color: var(--accent);
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+.quote-text.active {
+    opacity: 1;
+    position: relative;
+}
+
+.about-content {
+    animation-delay: 0.7s;
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: var(--text);
+    margin-bottom: 2rem;
+}
+
+.about-content p {
+    margin-bottom: 1.5rem;
+}
+
+.about-content strong {
+    color: var(--accent);
+    font-weight: 700;
+}
+
+.about-signature {
+    animation-delay: 0.9s;
+    text-align: right;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--accent);
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.about-signature span {
+    opacity: 0.8;
+}
+
+.handwritten {
+    font-family: 'Great Vibes', cursive;
+    font-size: 2.2rem;
+    font-weight: 400;
+    color: var(--accent);
+    letter-spacing: 1px;
+    min-width: 4em;
+    display: inline-block;
+}
+
+/* Ambient floating icons – emerge from bottom and fade at top */
+.ambient-icon {
+    position: absolute;
+    font-size: 1.4rem;
+    color: var(--primary);
+    opacity: 0;
+    will-change: transform, opacity;
+    animation: floatUp linear infinite;
+    bottom: 0;                     /* align to bottom */
+    transform: translateY(0);
+}
+
+.ambient-icon.coffee-cup {
+    font-size: 1.2rem;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0);
+        opacity: 0.07;
+    }
+    80% {
+        opacity: 0.03;
+    }
+    100% {
+        transform: translateY(-100vh);
+        opacity: 0;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 @media (max-width: 768px) {
     .about-container {
         padding: 1.5rem;
     }
-    .about-quote {
-        font-size: 1.2rem;
-        padding: 1rem;
+    .page-title {
+        font-size: 2rem;
     }
-    .about-content p {
+    .about-quote {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 0.5rem;
+        padding: 1rem 1.2rem;
+    }
+    .quote-text {
+        font-size: 1.1rem;
+    }
+    .about-content {
         font-size: 1rem;
+    }
+    .handwritten {
+        font-size: 1.8rem;
     }
 }

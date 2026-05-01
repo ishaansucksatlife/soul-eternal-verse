@@ -1,6 +1,6 @@
 <div class="nav-controls">
     <a href="#collections" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Collections</a>
-    <div class="breadcrumb"><a href="#home">Home</a> <span>></span> <a href="#collections">Collections</a> <span>></span> <span id="current-collection-name">Collection</span></div>
+    <div class="breadcrumb"><a href="#home">Home</a> <span>›</span> <a href="#collections">Collections</a> <span>›</span> <span id="current-collection-name">Collection</span></div>
 </div>
 <h2 class="page-title" id="collection-title">Collection Poems</h2>
 <div class="search-system">
@@ -8,11 +8,24 @@
         <div class="search-box">
             <input type="text" id="poem-search" placeholder="Search poems by title or preview...">
             <div class="search-actions">
+                <div class="sort-btn" id="poemSortToggleBtn" title="Sort poems">
+                    <i class="fas fa-sort-amount-down"></i>
+                </div>
                 <button class="filter-toggle" id="poemFilterToggle"><i class="fas fa-filter"></i></button>
                 <button class="search-btn" id="search-poems-btn"><i class="fas fa-search"></i></button>
             </div>
         </div>
     </div>
+    <!-- Sort dropdown -->
+    <div class="sort-dropdown" id="poemSortDropdown">
+        <div class="sort-option active" data-sort="newest">Newest first</div>
+        <div class="sort-option" data-sort="oldest">Oldest first</div>
+        <div class="sort-option" data-sort="name-asc">Title A–Z</div>
+        <div class="sort-option" data-sort="name-desc">Title Z–A</div>
+        <div class="sort-option" data-sort="words-desc">Most words</div>
+        <div class="sort-option" data-sort="words-asc">Fewest words</div>
+    </div>
+    <!-- Filter panel (unchanged) -->
     <div class="filter-panel" id="poemFilterPanel">
         <div class="filter-section">
             <h4><i class="fas fa-tags"></i> Poem Tags</h4>
