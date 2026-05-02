@@ -78,7 +78,7 @@
             </div>
         `).join('');
 
-        // Clean up the entrance animation after it finishes
+
         container.querySelectorAll('.poem-item').forEach(item => {
             item.addEventListener('animationend', function() {
                 this.style.opacity = '1';
@@ -87,7 +87,7 @@
             }, { once: true });
         });
 
-        // Click handlers + staggered delay
+
         document.querySelectorAll('.poem-item').forEach((item, i) => {
             item.style.animationDelay = `${i * 0.04}s`;
             item.onclick = () => {
