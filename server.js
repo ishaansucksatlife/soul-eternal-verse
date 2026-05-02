@@ -107,7 +107,7 @@ async function scanWorks() {
                     wordCount: wordCount,
                     readingTime: readingTime,
                     hasCover: hasPoemCover,
-                    order: poemOrder          // <-- added
+                    order: poemOrder
                 };
                 poems.push(poemObj);
 
@@ -119,7 +119,7 @@ async function scanWorks() {
                     wordCount: wordCount,
                     readingTime: readingTime,
                     hasCover: hasPoemCover,
-                    order: poemOrder          // <-- added
+                    order: poemOrder 
                 });
             }
             collections.push({
@@ -128,7 +128,7 @@ async function scanWorks() {
                 tags: collectionTags,
                 poems: poems,
                 hasCover: hasCover,
-                order: order                  // already there
+                order: order   
             });
         }
     } catch (err) {
