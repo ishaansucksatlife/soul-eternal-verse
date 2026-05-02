@@ -64,7 +64,7 @@
     async function loadPoemContent() {
         const detailContainer = document.getElementById('poem-detail');
 
-        // Always show the spinner while loading (this is the "video" you were missing)
+
         detailContainer.innerHTML = '<div class="loading"><div class="spinner"></div>Unfolding the poem...</div>';
 
         try {
@@ -77,7 +77,7 @@
             }
             const escapedContent = window.escapeHtml(fullContent);
 
-            // Build the new content HTML
+
             const newHTML = `
                 <h2 class="poem-detail-title">${window.escapeHtml(currentPoem.name)}</h2>
                 ${coverHtml}
@@ -86,16 +86,16 @@
                 <div class="poem-signature"><i class="fas fa-feather-alt"></i> Soul</div>
             `;
 
-            // Replace the spinner with the new poem
+
             detailContainer.innerHTML = newHTML;
 
-            // Trigger smooth entrance animation
+
             detailContainer.classList.add('animate-content');
             detailContainer.addEventListener('animationend', function() {
                 this.classList.remove('animate-content');
             }, { once: true });
 
-            // Fill the poem text
+
             const poemContentDiv = document.getElementById('poemContentDiv');
             if (poemContentDiv) {
                 const words = escapedContent.split(/(\s+)/);
@@ -108,7 +108,7 @@
                 poemContentDiv.style.webkitUserSelect = 'none';
             }
 
-            // Re‑attach scroll handler for progress bar
+
             const scrollDiv = document.querySelector('.poem-detail');
             if (scrollDiv) {
                 scrollDiv.onscroll = () => {
