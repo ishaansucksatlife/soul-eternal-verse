@@ -89,12 +89,6 @@ async function scanWorks() {
                     if (!isNaN(parsed)) poemOrder = parsed;
                 } catch {}
 
-                let created = 0;
-                try {
-                    const stats = await fs.stat(poemFolderPath);
-                    created = stats.birthtimeMs ?? stats.mtimeMs;
-                } catch {}
-
                 let preview = await readPoemDescription(poemFolderPath);
                 if (!preview) {
                     preview = poemContent.length > 200 ? poemContent.substring(0, 200) + '…' : poemContent;
@@ -110,8 +104,7 @@ async function scanWorks() {
                     wordCount: wordCount,
                     readingTime: readingTime,
                     hasCover: hasPoemCover,
-                    order: poemOrder,
-                    added: created
+                    order: poemOrder
                 };
                 poems.push(poemObj);
 
@@ -123,8 +116,7 @@ async function scanWorks() {
                     wordCount: wordCount,
                     readingTime: readingTime,
                     hasCover: hasPoemCover,
-                    order: poemOrder,
-                    added: created
+                    order: poemOrder
                 });
             }
             collections.push({
@@ -140,7 +132,7 @@ async function scanWorks() {
         console.error('Scan error (works folder may be missing):', err.message);
     }
 
-    allPoems.sort((a, b) => (b.added ?? 0) - (a.added ?? 0));
+    allPoems.sort((a, b) => (b.order ?? 0) - (a.order ?? 0));
 
     return { collections, allCollectionTags: Array.from(allCollectionTags).sort(), allPoems };
 }
