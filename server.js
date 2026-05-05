@@ -22,7 +22,6 @@ app.use('/banner-profile', express.static(path.join(__dirname, 'banner-profile')
 
 let cachedData = null;
 
-// ---------- File system helpers ----------
 async function readTagsFile(filePath) {
     try {
         const content = await fs.readFile(filePath, 'utf-8');
@@ -64,7 +63,6 @@ async function scanWorks() {
             const description = await readDescription(path.join(collectionPath, 'cdes.txt'));
             collectionTags.forEach(tag => allCollectionTags.add(tag));
 
-            // ---------- Collection order (corder.txt) ----------
             let order = 0;
             try {
                 const orderContent = await fs.readFile(path.join(collectionPath, 'corder.txt'), 'utf-8');
@@ -84,12 +82,17 @@ async function scanWorks() {
                 const poemContent = await readPoemContent(poemFolderPath);
                 const { wordCount, readingTime } = computeStats(poemContent);
 
-                // ---------- Poem order (porder.txt) ----------
                 let poemOrder = 0;
                 try {
                     const poemOrderContent = await fs.readFile(path.join(poemFolderPath, 'porder.txt'), 'utf-8');
                     const parsed = parseInt(poemOrderContent.trim(), 10);
                     if (!isNaN(parsed)) poemOrder = parsed;
+                } catch {}
+
+                let created = 0;
+                try {
+                    const stats = await fs.stat(poemFolderPath);
+                    created = stats.birthtimeMs ?? stats.mtimeMs;
                 } catch {}
 
                 let preview = await readPoemDescription(poemFolderPath);
@@ -107,7 +110,8 @@ async function scanWorks() {
                     wordCount: wordCount,
                     readingTime: readingTime,
                     hasCover: hasPoemCover,
-                    order: poemOrder
+                    order: poemOrder,
+                    added: created
                 };
                 poems.push(poemObj);
 
@@ -119,7 +123,8 @@ async function scanWorks() {
                     wordCount: wordCount,
                     readingTime: readingTime,
                     hasCover: hasPoemCover,
-                    order: poemOrder 
+                    order: poemOrder,
+                    added: created
                 });
             }
             collections.push({
@@ -128,12 +133,15 @@ async function scanWorks() {
                 tags: collectionTags,
                 poems: poems,
                 hasCover: hasCover,
-                order: order   
+                order: order
             });
         }
     } catch (err) {
         console.error('Scan error (works folder may be missing):', err.message);
     }
+
+    allPoems.sort((a, b) => (b.added ?? 0) - (a.added ?? 0));
+
     return { collections, allCollectionTags: Array.from(allCollectionTags).sort(), allPoems };
 }
 
@@ -143,7 +151,6 @@ async function refreshCache() {
     console.log(`Found ${cachedData.collections.length} collections, ${cachedData.allPoems.length} poems.`);
 }
 
-// ---------- API Routes ----------
 app.get('/api/data', async (req, res) => {
     if (!cachedData) await refreshCache();
     res.json(cachedData);
