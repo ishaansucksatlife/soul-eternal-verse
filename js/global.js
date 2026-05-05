@@ -6,7 +6,6 @@ window.showModule = function(moduleName) {
     const activeContainer = document.getElementById(`module-${moduleName}`);
     if (!activeContainer) return;
 
-    // If the module is already active, don't animate it again.
     const wasActive = activeContainer.classList.contains('active');
     activeContainer.classList.add('active');
 
@@ -54,7 +53,6 @@ async function preloadAll() {
         if (!dataRes.ok) throw new Error(`HTTP ${dataRes.status}`);
         window.appState.appData = await dataRes.json();
 
-        // Preload all cover images in the background
         preloadAllImages(window.appState.appData);
 
         const modulePromises = modules.map(async (moduleName) => {
@@ -88,8 +86,15 @@ async function preloadAll() {
 
         loader.classList.add('hide');
         initModal();
-        window.location.hash = 'home';
-        window.showModule('home');
+
+        // ✅ Respect the shared hash instead of always going home
+        const hash = window.location.hash.slice(1) || 'home';
+        let targetModule = hash;
+        if (hash.startsWith('poems/')) targetModule = 'poems';
+        else if (hash.startsWith('poem/')) targetModule = 'poem-detail';
+
+        window.showModule(targetModule);
+
         setTimeout(() => {
             document.body.style.cursor = 'url("/cursors/static.cur"), auto';
         }, 50);
@@ -100,24 +105,18 @@ async function preloadAll() {
     }
 }
 
-/**
- * Preloads every cover image so they appear instantly when needed.
- */
 function preloadAllImages(data) {
     const urls = [];
 
-    // Static assets
     urls.push('/banner-profile/banner.png');
     urls.push('/banner-profile/profile.png');
 
-    // Collection covers
     data.collections.forEach(coll => {
         if (coll.hasCover) {
             urls.push(`/works/${encodeURIComponent(coll.name)}/c-cover.png`);
         }
     });
 
-    // Poem covers
     data.allPoems.forEach(poem => {
         if (poem.hasCover) {
             urls.push(`/works/${encodeURIComponent(poem.collectionName)}/${encodeURIComponent(poem.poemName)}/p-cover.png`);
@@ -167,7 +166,7 @@ if (backBtn) {
     backBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-document.getElementById('randomPoemBtn')?.addEventListener('click', async () => {
+document.getElementById('randomPoemBtn')?.addEventListener('click', () => {
     if (!window.appState.appData) return;
     const poems = window.appState.appData.allPoems;
     if (!poems.length) return;
