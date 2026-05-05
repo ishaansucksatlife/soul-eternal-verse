@@ -7,6 +7,27 @@
     let allWords = [];
     let focusScrollHandler = null;
 
+    function getBestVoice() {
+        const voices = window.speechSynthesis.getVoices();
+        if (!voices.length) return null;
+        const preferred = voices.filter(v => v.lang === 'en-US' && (
+            v.name.includes('Microsoft David') ||
+            v.name.includes('Microsoft Zira') ||
+            v.name.includes('Samantha') ||
+            v.name.includes('Google UK English Female') ||
+            v.name.includes('Google UK English Male') ||
+            v.name.includes('Daniel')
+        ));
+        if (preferred.length) return preferred[0];
+        const english = voices.filter(v => v.lang.startsWith('en'));
+        if (english.length) return english[0];
+        return voices[0];
+    }
+
+    function splitForSpeech(text) {
+        return text.replace(/([.!?])\s+/g, '$1\u200B ');
+    }
+
     async function init() {
         if (window.speechSynthesis) window.speechSynthesis.cancel();
         isSpeaking = false;
@@ -63,10 +84,7 @@
 
     async function loadPoemContent() {
         const detailContainer = document.getElementById('poem-detail');
-
-
         detailContainer.innerHTML = '<div class="loading"><div class="spinner"></div>Unfolding the poem...</div>';
-
         try {
             const res = await fetch(`/api/poem/${encodeURIComponent(currentCollection.name)}/${encodeURIComponent(currentPoem.name)}`);
             const data = await res.json();
@@ -76,8 +94,6 @@
                 coverHtml = `<div class="poem-cover"><img src="/works/${encodeURIComponent(currentCollection.name)}/${encodeURIComponent(currentPoem.name)}/p-cover.png" alt="Poem illustration"></div>`;
             }
             const escapedContent = window.escapeHtml(fullContent);
-
-
             const newHTML = `
                 <h2 class="poem-detail-title">${window.escapeHtml(currentPoem.name)}</h2>
                 ${coverHtml}
@@ -85,16 +101,11 @@
                 <div class="poem-content" id="poemContentDiv" style="font-size:${currentFontSize}rem;"></div>
                 <div class="poem-signature"><i class="fas fa-feather-alt"></i> Soul</div>
             `;
-
-
             detailContainer.innerHTML = newHTML;
-
-
             detailContainer.classList.add('animate-content');
             detailContainer.addEventListener('animationend', function() {
                 this.classList.remove('animate-content');
             }, { once: true });
-
 
             const poemContentDiv = document.getElementById('poemContentDiv');
             if (poemContentDiv) {
@@ -107,7 +118,6 @@
                 poemContentDiv.style.userSelect = 'none';
                 poemContentDiv.style.webkitUserSelect = 'none';
             }
-
 
             const scrollDiv = document.querySelector('.poem-detail');
             if (scrollDiv) {
@@ -278,6 +288,14 @@
 
         const speakBtn = document.getElementById('speakPoemBtn');
         if (speakBtn) {
+            let bestVoice = null;
+            const loadVoice = () => {
+                bestVoice = getBestVoice();
+            };
+            loadVoice();
+            if (window.speechSynthesis.getVoices().length) loadVoice();
+            else window.speechSynthesis.onvoiceschanged = loadVoice;
+
             speakBtn.onclick = () => {
                 if (isSpeaking && speechUtterance) {
                     window.speechSynthesis.cancel();
@@ -287,29 +305,31 @@
                     speakBtn.title = 'Read aloud';
                     return;
                 }
-                const poemText = document.getElementById('poemContentDiv')?.textContent;
-                if (!poemText) return;
+
+                const poemContentDiv = document.getElementById('poemContentDiv');
+                if (!poemContentDiv) return;
+                const rawText = poemContentDiv.textContent.trim();
+                if (!rawText) return;
+
                 if (speechUtterance) window.speechSynthesis.cancel();
-                speechUtterance = new SpeechSynthesisUtterance(poemText);
-                speechUtterance.rate = 0.75;
-                speechUtterance.pitch = 0.5;
+
+                const textToSpeak = splitForSpeech(rawText);
+                speechUtterance = new SpeechSynthesisUtterance(textToSpeak);
+                speechUtterance.rate = 0.85;
+                speechUtterance.pitch = 0.95;
                 speechUtterance.lang = 'en-US';
-                const setVoice = () => {
-                    const voices = window.speechSynthesis.getVoices();
-                    const deep = voices.find(v => v.lang === 'en-US' && /Male|David|Mark/.test(v.name));
-                    if (deep) speechUtterance.voice = deep;
-                };
-                if (window.speechSynthesis.getVoices().length) setVoice();
-                else window.speechSynthesis.onvoiceschanged = setVoice;
+
+                if (bestVoice) {
+                    speechUtterance.voice = bestVoice;
+                }
 
                 const computeWordPositions = () => {
-                    const text = document.getElementById('poemContentDiv')?.textContent || '';
+                    const text = poemContentDiv.textContent || '';
                     allWords = [];
-                    const wordSpans = document.getElementById('poemContentDiv')?.querySelectorAll('.word');
+                    const wordSpans = poemContentDiv.querySelectorAll('.word');
                     if (!wordSpans) return;
                     let pos = 0;
-                    const nodes = Array.from(wordSpans);
-                    nodes.forEach(span => {
+                    Array.from(wordSpans).forEach(span => {
                         const wordPos = text.indexOf(span.textContent, pos);
                         if (wordPos !== -1) {
                             span.setAttribute('data-start', wordPos);
@@ -320,6 +340,7 @@
                     });
                 };
                 computeWordPositions();
+
                 speechUtterance.onboundary = (e) => {
                     if (e.name === 'word' && allWords.length) {
                         clearWordHighlight();
@@ -332,6 +353,7 @@
                         if (currentSpan) currentSpan.classList.add('speaking');
                     }
                 };
+
                 speechUtterance.onend = () => {
                     clearWordHighlight();
                     isSpeaking = false;
@@ -344,6 +366,7 @@
                     speakBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
                     speakBtn.title = 'Read aloud';
                 };
+
                 window.speechSynthesis.speak(speechUtterance);
                 isSpeaking = true;
                 speakBtn.innerHTML = '<i class="fas fa-stop"></i>';
