@@ -207,12 +207,12 @@
         };
     }
 
-    // Re‑trigger animations every time the module is shown
+
     window.addEventListener('moduleShown', (e) => {
         if (e.detail.module === 'collections') init();
     });
 
-    // Initial load if already active
+
     if (document.getElementById('module-collections')?.classList.contains('active')) {
         init();
     }

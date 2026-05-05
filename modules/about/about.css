@@ -2,7 +2,7 @@
 
 #module-about {
     position: relative;
-    overflow: hidden;              /* ensure icons don’t leak */
+    overflow: hidden; 
 }
 
 .ambient-icons {
@@ -218,7 +218,7 @@
     display: inline-block;
 }
 
-/* Ambient floating icons – emerge from bottom and fade at top */
+
 .ambient-icon {
     position: absolute;
     font-size: 1.4rem;
@@ -226,7 +226,7 @@
     opacity: 0;
     will-change: transform, opacity;
     animation: floatUp linear infinite;
-    bottom: 0;                     /* align to bottom */
+    bottom: 0;                   
     transform: translateY(0);
 }
 

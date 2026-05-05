@@ -45,19 +45,18 @@
         if (!container) return;
         container.innerHTML = '';
 
-        // Feathers (14) – start from random horizontal positions, bottom aligned
+
         for (let i = 0; i < 14; i++) {
             const el = document.createElement('div');
             el.className = 'ambient-icon fas fa-feather-alt';
             el.style.left = Math.random() * 100 + '%';
-            // slight vertical stagger by randomizing the start offset
             el.style.setProperty('--start-offset', Math.random() * 0.3 + 'vh');
             el.style.animationDelay = Math.random() * 20 + 's';
             el.style.animationDuration = (18 + Math.random() * 30) + 's';
             container.appendChild(el);
         }
 
-        // Coffee cups (6)
+
         for (let i = 0; i < 6; i++) {
             const el = document.createElement('div');
             el.className = 'ambient-icon fas fa-coffee coffee-cup';
@@ -98,7 +97,7 @@
 
     function init() {
         resetEntranceAnimations();
-        generateAmbientIcons();   // icons begin immediately from the bottom
+        generateAmbientIcons();
         initQuote();
         updateStats();
 
