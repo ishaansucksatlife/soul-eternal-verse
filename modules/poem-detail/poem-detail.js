@@ -28,56 +28,78 @@
         return text.replace(/([.!?])\s+/g, '$1\u200B ');
     }
 
+    function waitForData(callback) {
+        if (window.appState && window.appState.appData) {
+            callback();
+        } else {
+            const checkInterval = setInterval(() => {
+                if (window.appState && window.appState.appData) {
+                    clearInterval(checkInterval);
+                    callback();
+                }
+            }, 50);
+        }
+    }
+
     async function init(params) {
         if (window.speechSynthesis) window.speechSynthesis.cancel();
         isSpeaking = false;
 
-        let poemName = null;
-        if (params && params.poemName) {
-            poemName = params.poemName;
-        } else {
-            const path = window.location.pathname;
-            const match = path.match(/^\/poem\/(.+)$/);
-            if (match) poemName = decodeURIComponent(match[1]);
-        }
-
-        if (!poemName) {
-            window.navigateTo('/collections');
-            return;
-        }
-
-        const allCollections = window.appState.appData.collections;
-        for (const coll of allCollections) {
-            const poem = coll.poems.find(p => p.name === poemName);
-            if (poem) {
-                currentCollection = coll;
-                currentPoem = poem;
-                break;
+        waitForData(() => {
+            let poemName = null;
+            if (params && params.poemName) {
+                poemName = params.poemName;
+            } else {
+                const path = window.location.pathname;
+                const match = path.match(/^\/poem\/(.+)$/);
+                if (match) poemName = decodeURIComponent(match[1]);
             }
-        }
 
-        if (!currentCollection || !currentPoem) {
-            window.navigateTo('/collections');
-            return;
-        }
+            if (!poemName) {
+                window.navigateTo('/collections');
+                return;
+            }
 
-        window.appState.currentCollection = currentCollection;
-        window.appState.currentPoem = currentPoem;
+            const allCollections = window.appState.appData.collections;
+            let found = false;
+            for (const coll of allCollections) {
+                // Try exact match first
+                let poem = coll.poems.find(p => p.name === poemName);
+                // Fall back to case-insensitive match
+                if (!poem) {
+                    poem = coll.poems.find(p => p.name.toLowerCase() === poemName.toLowerCase());
+                }
+                if (poem) {
+                    currentCollection = coll;
+                    currentPoem = poem;
+                    found = true;
+                    break;
+                }
+            }
 
-        const localProgress = document.getElementById('poemReadingProgress');
-        const localProgressBar = document.getElementById('poemReadingProgressBar');
-        if (localProgress) localProgress.style.display = 'block';
-        if (localProgressBar) localProgressBar.style.width = '0%';
+            if (!found) {
+                window.navigateTo('/collections');
+                return;
+            }
 
-        const globalProgress = document.getElementById('readingProgress');
-        if (globalProgress) globalProgress.style.display = 'none';
+            window.appState.currentCollection = currentCollection;
+            window.appState.currentPoem = currentPoem;
 
-        await loadPoemContent();
-        updateNavButtons();
-        updateBackLinks();
-        setupToolButtons();
-        setupKeyboardShortcuts();
-        setupScrollToTop();
+            const localProgress = document.getElementById('poemReadingProgress');
+            const localProgressBar = document.getElementById('poemReadingProgressBar');
+            if (localProgress) localProgress.style.display = 'block';
+            if (localProgressBar) localProgressBar.style.width = '0%';
+
+            const globalProgress = document.getElementById('readingProgress');
+            if (globalProgress) globalProgress.style.display = 'none';
+
+            loadPoemContent();
+            updateNavButtons();
+            updateBackLinks();
+            setupToolButtons();
+            setupKeyboardShortcuts();
+            setupScrollToTop();
+        });
     }
 
     function getSortedPoems() {
@@ -171,7 +193,7 @@
     }
 
     function updateBackLinks() {
-        const collectionPath = '/collections/' + encodeURIComponent(currentCollection.name);
+        const collectionPath = '/collections/' + window.slugify(currentCollection.name);
         const backLink = document.getElementById('back-to-collection-link');
         if (backLink) {
             backLink.href = collectionPath;
