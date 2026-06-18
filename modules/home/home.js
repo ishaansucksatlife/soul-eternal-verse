@@ -130,20 +130,7 @@
         featuredCard.classList.add('poem-enter-active');
 
         featuredCard.onclick = () => {
-            const coll = appData.collections.find(c => c.name === poem.collectionName);
-            if (coll) {
-                window.appState.currentCollection = coll;
-                window.appState.currentPoem = {
-                    name: poem.poemName,
-                    tags: poem.tags,
-                    wordCount: poem.wordCount,
-                    readingTime: poem.readingTime,
-                    hasCover: poem.hasCover,
-                    preview: poem.preview
-                };
-                window.location.hash = `poem/${coll.name}/${poem.poemName}`;
-                window.showModule('poem-detail');
-            }
+            window.navigateTo('/poem/' + encodeURIComponent(poem.poemName));
         };
     }
 
@@ -175,9 +162,9 @@
         const btnCollections = document.getElementById('btn-collections');
         const btnAbout = document.getElementById('btn-about');
         const btnContact = document.getElementById('btn-contact');
-        if (btnCollections) btnCollections.onclick = () => { window.location.hash = 'collections'; window.showModule('collections'); };
-        if (btnAbout) btnAbout.onclick = () => { window.location.hash = 'about'; window.showModule('about'); };
-        if (btnContact) btnContact.onclick = () => { window.location.hash = 'contact'; window.showModule('contact'); };
+        if (btnCollections) btnCollections.onclick = () => { window.navigateTo('/collections'); };
+        if (btnAbout) btnAbout.onclick = () => { window.navigateTo('/about'); };
+        if (btnContact) btnContact.onclick = () => { window.navigateTo('/contact'); };
     }
 
     init();

@@ -1,4 +1,4 @@
-window.showModule = function(moduleName) {
+window.showModule = function(moduleName, params) {
     document.querySelectorAll('.module-container').forEach(c => {
         c.classList.remove('active', 'animate-in');
     });
@@ -39,10 +39,113 @@ window.showModule = function(moduleName) {
         }, { once: true });
     }
 
-    window.dispatchEvent(new CustomEvent('moduleShown', { detail: { module: moduleName } }));
+    window.dispatchEvent(new CustomEvent('moduleShown', { detail: { module: moduleName, params: params } }));
 };
 
 const modules = ['home', 'collections', 'about', 'contact', 'poems', 'poem-detail'];
+
+function getRouteFromPath(path) {
+    const parts = path.split('/').filter(p => p.length > 0);
+    if (parts.length === 0 || parts[0] === 'home') {
+        return { module: 'home', params: {} };
+    }
+    if (parts[0] === 'collections') {
+        if (parts.length === 1) {
+            return { module: 'collections', params: {} };
+        } else {
+            return { module: 'poems', params: { collectionName: decodeURIComponent(parts[1]) } };
+        }
+    }
+    if (parts[0] === 'poem') {
+        if (parts.length >= 2) {
+            return { module: 'poem-detail', params: { poemName: decodeURIComponent(parts[1]) } };
+        } else {
+            return { module: 'home', params: {} };
+        }
+    }
+    if (parts[0] === 'about') {
+        return { module: 'about', params: {} };
+    }
+    if (parts[0] === 'contact') {
+        return { module: 'contact', params: {} };
+    }
+    return { module: 'home', params: {} };
+}
+
+function getCurrentRoute() {
+    const hash = window.location.hash.slice(1);
+    if (hash) {
+        let module = hash;
+        let params = {};
+        if (hash.startsWith('poems/')) {
+            module = 'poems';
+            const parts = hash.split('/');
+            if (parts.length > 1) params.collectionName = decodeURIComponent(parts[1]);
+        } else if (hash.startsWith('poem/')) {
+            module = 'poem-detail';
+            const parts = hash.split('/');
+            if (parts.length > 1) params.poemName = decodeURIComponent(parts[1]);
+        } else if (['home', 'collections', 'about', 'contact'].includes(hash)) {
+            module = hash;
+        } else {
+            module = 'home';
+        }
+        return { module, params };
+    }
+    const path = window.location.pathname;
+    if (path === '/' || path === '') {
+        return { module: 'home', params: {} };
+    }
+    return getRouteFromPath(path);
+}
+
+function navigateTo(path, params) {
+    const targetPath = path.startsWith('/') ? path : '/' + path;
+    history.pushState({}, '', targetPath);
+    const route = getRouteFromPath(targetPath);
+    if (route.module === 'poems') {
+        window.appState.currentCollectionName = route.params.collectionName;
+    } else if (route.module === 'poem-detail') {
+        const poemName = route.params.poemName;
+        if (!window.appState.appData) return;
+        for (const coll of window.appState.appData.collections) {
+            const poem = coll.poems.find(p => p.name === poemName);
+            if (poem) {
+                window.appState.currentCollection = coll;
+                window.appState.currentPoem = poem;
+                break;
+            }
+        }
+    }
+    window.showModule(route.module, route.params);
+    if (route.module === 'poems') {
+        const event = new CustomEvent('collectionChanged', { detail: { collectionName: route.params.collectionName } });
+        window.dispatchEvent(event);
+    }
+    if (route.module === 'poem-detail') {
+        const event = new CustomEvent('poemChanged', { detail: { poemName: route.params.poemName } });
+        window.dispatchEvent(event);
+    }
+}
+
+function handlePopState() {
+    const route = getCurrentRoute();
+    if (route.module === 'poems') {
+        window.appState.currentCollectionName = route.params.collectionName;
+    } else if (route.module === 'poem-detail') {
+        const poemName = route.params.poemName;
+        if (!window.appState.appData) return;
+        for (const coll of window.appState.appData.collections) {
+            const poem = coll.poems.find(p => p.name === poemName);
+            if (poem) {
+                window.appState.currentCollection = coll;
+                window.appState.currentPoem = poem;
+                break;
+            }
+        }
+    }
+    window.showModule(route.module, route.params);
+}
 
 async function preloadAll() {
     const loader = document.getElementById('loading-screen');
@@ -87,13 +190,23 @@ async function preloadAll() {
         loader.classList.add('hide');
         initModal();
 
-        // ✅ Respect the shared hash instead of always going home
-        const hash = window.location.hash.slice(1) || 'home';
-        let targetModule = hash;
-        if (hash.startsWith('poems/')) targetModule = 'poems';
-        else if (hash.startsWith('poem/')) targetModule = 'poem-detail';
-
-        window.showModule(targetModule);
+        const route = getCurrentRoute();
+        if (route.module === 'poems') {
+            window.appState.currentCollectionName = route.params.collectionName;
+        } else if (route.module === 'poem-detail') {
+            const poemName = route.params.poemName;
+            if (window.appState.appData) {
+                for (const coll of window.appState.appData.collections) {
+                    const poem = coll.poems.find(p => p.name === poemName);
+                    if (poem) {
+                        window.appState.currentCollection = coll;
+                        window.appState.currentPoem = poem;
+                        break;
+                    }
+                }
+            }
+        }
+        window.showModule(route.module, route.params);
 
         setTimeout(() => {
             document.body.style.cursor = 'url("/cursors/static.cur"), auto';
@@ -133,18 +246,17 @@ document.querySelectorAll('[data-module]').forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
         const module = link.dataset.module;
-        window.location.hash = module;
-        window.showModule(module);
+        let path;
+        if (module === 'home') path = '/home';
+        else if (module === 'collections') path = '/collections';
+        else if (module === 'about') path = '/about';
+        else if (module === 'contact') path = '/contact';
+        else return;
+        navigateTo(path);
     });
 });
 
-window.addEventListener('hashchange', () => {
-    let hash = window.location.hash.slice(1) || 'home';
-    let module = hash;
-    if (hash.startsWith('poems/')) module = 'poems';
-    else if (hash.startsWith('poem/')) module = 'poem-detail';
-    window.showModule(module);
-});
+window.addEventListener('popstate', handlePopState);
 
 const themeToggle = document.getElementById('themeToggle');
 if (themeToggle) {
@@ -175,8 +287,7 @@ document.getElementById('randomPoemBtn')?.addEventListener('click', () => {
     if (collection) {
         window.appState.currentCollection = collection;
         window.appState.currentPoem = random;
-        window.location.hash = `poem/${collection.name}/${random.poemName}`;
-        window.showModule('poem-detail');
+        navigateTo(`/poem/${encodeURIComponent(random.poemName)}`);
     }
 });
 

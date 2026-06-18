@@ -11,6 +11,7 @@
     { "src": "banner-profile/**", "use": "@vercel/static" }
   ],
   "routes": [
+    { "src": "/", "dest": "/home", "status": 301 },
     { "src": "/api/(.*)", "dest": "/server.js" },
     { "src": "/css/(.*)", "dest": "/css/$1" },
     { "src": "/js/(.*)", "dest": "/js/$1" },

@@ -5,18 +5,19 @@
     window.appState.poemsSort = currentSort;
 
     function init() {
-        const hash = window.location.hash.slice(1);
-        const match = hash.match(/^poems\/(.+)$/);
+        const path = window.location.pathname;
+        const match = path.match(/^\/collections\/(.+)$/);
         if (match) {
             const collName = decodeURIComponent(match[1]);
             currentCollection = window.appState.appData.collections.find(c => c.name === collName);
             if (!currentCollection) {
-                window.location.hash = 'collections';
-                window.showModule('collections');
+                window.navigateTo('/collections');
                 return;
             }
             window.appState.currentCollection = currentCollection;
             render();
+        } else {
+            window.navigateTo('/collections');
         }
     }
 
@@ -78,7 +79,6 @@
             </div>
         `).join('');
 
-
         container.querySelectorAll('.poem-item').forEach(item => {
             item.addEventListener('animationend', function() {
                 this.style.opacity = '1';
@@ -87,7 +87,6 @@
             }, { once: true });
         });
 
-
         document.querySelectorAll('.poem-item').forEach((item, i) => {
             item.style.animationDelay = `${i * 0.04}s`;
             item.onclick = () => {
@@ -95,8 +94,7 @@
                 const poem = currentCollection.poems.find(p => p.name === poemName);
                 if (poem) {
                     window.appState.currentPoem = poem;
-                    window.location.hash = `poem/${encodeURIComponent(currentCollection.name)}/${encodeURIComponent(poem.name)}`;
-                    window.showModule('poem-detail');
+                    window.navigateTo('/poem/' + encodeURIComponent(poem.name));
                 }
             };
         });
@@ -184,11 +182,17 @@
     }
 
     const backToCollections = document.getElementById('back-to-collections');
-    if (backToCollections) backToCollections.onclick = () => { window.location.hash = 'collections'; window.showModule('collections'); };
+    if (backToCollections) backToCollections.onclick = () => {
+        window.navigateTo('/collections');
+    };
     const breadcrumbHome = document.getElementById('breadcrumb-home-2');
-    if (breadcrumbHome) breadcrumbHome.onclick = () => { window.location.hash = 'home'; window.showModule('home'); };
+    if (breadcrumbHome) breadcrumbHome.onclick = () => {
+        window.navigateTo('/home');
+    };
     const breadcrumbCollections = document.getElementById('breadcrumb-collections');
-    if (breadcrumbCollections) breadcrumbCollections.onclick = () => { window.location.hash = 'collections'; window.showModule('collections'); };
+    if (breadcrumbCollections) breadcrumbCollections.onclick = () => {
+        window.navigateTo('/collections');
+    };
 
     window.addEventListener('moduleShown', (e) => {
         if (e.detail.module === 'poems') init();

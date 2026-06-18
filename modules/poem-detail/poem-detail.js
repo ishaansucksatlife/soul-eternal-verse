@@ -28,44 +28,56 @@
         return text.replace(/([.!?])\s+/g, '$1\u200B ');
     }
 
-    async function init() {
+    async function init(params) {
         if (window.speechSynthesis) window.speechSynthesis.cancel();
         isSpeaking = false;
-        const hash = window.location.hash.slice(1);
-        const match = hash.match(/^poem\/([^\/]+)\/(.+)$/);
-        if (match) {
-            const collName = decodeURIComponent(match[1]);
-            const poemName = decodeURIComponent(match[2]);
-            currentCollection = window.appState.appData.collections.find(c => c.name === collName);
-            if (!currentCollection) {
-                window.location.hash = 'collections';
-                window.showModule('collections');
-                return;
-            }
-            currentPoem = currentCollection.poems.find(p => p.name === poemName);
-            if (!currentPoem) {
-                window.location.hash = `poems/${encodeURIComponent(collName)}`;
-                window.showModule('poems');
-                return;
-            }
-            window.appState.currentCollection = currentCollection;
-            window.appState.currentPoem = currentPoem;
 
-            const localProgress = document.getElementById('poemReadingProgress');
-            const localProgressBar = document.getElementById('poemReadingProgressBar');
-            if (localProgress) localProgress.style.display = 'block';
-            if (localProgressBar) localProgressBar.style.width = '0%';
-
-            const globalProgress = document.getElementById('readingProgress');
-            if (globalProgress) globalProgress.style.display = 'none';
-
-            await loadPoemContent();
-            updateNavButtons();
-            updateBackLinks();
-            setupToolButtons();
-            setupKeyboardShortcuts();
-            setupScrollToTop();
+        let poemName = null;
+        if (params && params.poemName) {
+            poemName = params.poemName;
+        } else {
+            const path = window.location.pathname;
+            const match = path.match(/^\/poem\/(.+)$/);
+            if (match) poemName = decodeURIComponent(match[1]);
         }
+
+        if (!poemName) {
+            window.navigateTo('/collections');
+            return;
+        }
+
+        const allCollections = window.appState.appData.collections;
+        for (const coll of allCollections) {
+            const poem = coll.poems.find(p => p.name === poemName);
+            if (poem) {
+                currentCollection = coll;
+                currentPoem = poem;
+                break;
+            }
+        }
+
+        if (!currentCollection || !currentPoem) {
+            window.navigateTo('/collections');
+            return;
+        }
+
+        window.appState.currentCollection = currentCollection;
+        window.appState.currentPoem = currentPoem;
+
+        const localProgress = document.getElementById('poemReadingProgress');
+        const localProgressBar = document.getElementById('poemReadingProgressBar');
+        if (localProgress) localProgress.style.display = 'block';
+        if (localProgressBar) localProgressBar.style.width = '0%';
+
+        const globalProgress = document.getElementById('readingProgress');
+        if (globalProgress) globalProgress.style.display = 'none';
+
+        await loadPoemContent();
+        updateNavButtons();
+        updateBackLinks();
+        setupToolButtons();
+        setupKeyboardShortcuts();
+        setupScrollToTop();
     }
 
     function getSortedPoems() {
@@ -155,18 +167,27 @@
 
     function navigateTo(poem) {
         if (!currentCollection) return;
-        window.location.hash = `poem/${encodeURIComponent(currentCollection.name)}/${encodeURIComponent(poem.name)}`;
-        window.showModule('poem-detail');
+        window.navigateTo('/poem/' + encodeURIComponent(poem.name));
     }
 
     function updateBackLinks() {
-        const collectionHref = `#poems/${encodeURIComponent(currentCollection.name)}`;
+        const collectionPath = '/collections/' + encodeURIComponent(currentCollection.name);
         const backLink = document.getElementById('back-to-collection-link');
-        if (backLink) backLink.href = collectionHref;
+        if (backLink) {
+            backLink.href = collectionPath;
+            backLink.onclick = (e) => {
+                e.preventDefault();
+                window.navigateTo(collectionPath);
+            };
+        }
         const collectionBreadcrumb = document.getElementById('collection-breadcrumb-link');
         if (collectionBreadcrumb) {
-            collectionBreadcrumb.href = collectionHref;
+            collectionBreadcrumb.href = collectionPath;
             collectionBreadcrumb.textContent = currentCollection.name;
+            collectionBreadcrumb.onclick = (e) => {
+                e.preventDefault();
+                window.navigateTo(collectionPath);
+            };
         }
         document.getElementById('current-poem-title').innerText = currentPoem.name;
     }
@@ -276,7 +297,7 @@
         if (shareBtn) {
             shareBtn.onclick = async () => {
                 if (!currentCollection || !currentPoem) return;
-                const url = `${window.location.origin}${window.location.pathname}#poem/${encodeURIComponent(currentCollection.name)}/${encodeURIComponent(currentPoem.name)}`;
+                const url = `${window.location.origin}/poem/${encodeURIComponent(currentPoem.name)}`;
                 try {
                     await navigator.clipboard.writeText(url);
                     window.showAlert('Link copied to clipboard!', 'Success');
@@ -400,9 +421,14 @@
     }
 
     window.addEventListener('moduleShown', (e) => {
-        if (e.detail.module === 'poem-detail') init();
+        if (e.detail.module === 'poem-detail') {
+            const params = e.detail.params || {};
+            init(params);
+        }
     });
+
     if (document.getElementById('module-poem-detail')?.classList.contains('active')) {
-        init();
+        const params = window.getRouteParams ? window.getRouteParams() : {};
+        init(params);
     }
 })();

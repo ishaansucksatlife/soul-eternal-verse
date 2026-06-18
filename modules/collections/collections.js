@@ -99,8 +99,7 @@
                 const coll = appData.collections.find(c => c.name === collName);
                 if (coll) {
                     window.appState.currentCollection = coll;
-                    window.location.hash = `poems/${encodeURIComponent(coll.name)}`;
-                    window.showModule('poems');
+                    window.navigateTo('/collections/' + encodeURIComponent(coll.name));
                 }
             };
         });
@@ -207,11 +206,15 @@
         };
     }
 
-
     window.addEventListener('moduleShown', (e) => {
-        if (e.detail.module === 'collections') init();
+        if (e.detail.module === 'collections') {
+            appData = window.appState.appData;
+            if (appData) {
+                renderCollectionTags();
+                renderAllCollections();
+            }
+        }
     });
-
 
     if (document.getElementById('module-collections')?.classList.contains('active')) {
         init();

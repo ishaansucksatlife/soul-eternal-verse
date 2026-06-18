@@ -45,7 +45,6 @@
         if (!container) return;
         container.innerHTML = '';
 
-
         for (let i = 0; i < 14; i++) {
             const el = document.createElement('div');
             el.className = 'ambient-icon fas fa-feather-alt';
@@ -55,7 +54,6 @@
             el.style.animationDuration = (18 + Math.random() * 30) + 's';
             container.appendChild(el);
         }
-
 
         for (let i = 0; i < 6; i++) {
             const el = document.createElement('div');
