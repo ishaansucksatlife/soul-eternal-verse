@@ -4,21 +4,19 @@
     let currentSort = 'newest';
     window.appState.poemsSort = currentSort;
 
-    function init() {
-        const path = window.location.pathname;
-        const match = path.match(/^\/collections\/(.+)$/);
-        if (match) {
-            const collName = decodeURIComponent(match[1]);
-            currentCollection = window.appState.appData.collections.find(c => c.name === collName);
-            if (!currentCollection) {
-                window.navigateTo('/collections');
-                return;
-            }
-            window.appState.currentCollection = currentCollection;
-            render();
-        } else {
+    function init(params) {
+        const collectionName = params?.collectionName || window.appState.currentCollectionName;
+        if (!collectionName) {
             window.navigateTo('/collections');
+            return;
         }
+        currentCollection = window.appState.appData.collections.find(c => c.name === collectionName);
+        if (!currentCollection) {
+            window.navigateTo('/collections');
+            return;
+        }
+        window.appState.currentCollection = currentCollection;
+        render();
     }
 
     function render() {
@@ -195,7 +193,13 @@
     };
 
     window.addEventListener('moduleShown', (e) => {
-        if (e.detail.module === 'poems') init();
+        if (e.detail.module === 'poems') {
+            init(e.detail.params);
+        }
     });
-    if (document.getElementById('module-poems').classList.contains('active')) init();
+
+    if (document.getElementById('module-poems').classList.contains('active')) {
+        const params = window.getCurrentRoute ? window.getCurrentRoute().params : {};
+        init(params);
+    }
 })();

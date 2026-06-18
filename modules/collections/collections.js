@@ -99,7 +99,7 @@
                 const coll = appData.collections.find(c => c.name === collName);
                 if (coll) {
                     window.appState.currentCollection = coll;
-                    window.navigateTo('/collections/' + encodeURIComponent(coll.name));
+                    window.navigateTo('/collections/' + window.slugify(coll.name));
                 }
             };
         });
