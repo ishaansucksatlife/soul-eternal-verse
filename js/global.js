@@ -74,6 +74,21 @@ function getRouteFromPath(path) {
             return { module: 'poems', params: { collectionName: decodeURIComponent(slug) } };
         }
     }
+    if (parts[0] === 'share') {
+        if (parts.length >= 2) {
+            const orderNumber = parseInt(parts[1], 10);
+            if (!isNaN(orderNumber) && window.appState?.appData) {
+                const poem = window.appState.appData.allPoems.find(p => p.order === orderNumber);
+                if (poem) {
+                    const targetPath = '/poem/' + encodeURIComponent(poem.poemName);
+                    navigateTo(targetPath);
+                    return { module: 'poem-detail', params: { poemName: poem.poemName } };
+                }
+            }
+            return { module: 'home', params: {} };
+        }
+        return { module: 'home', params: {} };
+    }
     if (parts[0] === 'poem') {
         if (parts.length >= 2) {
             return { module: 'poem-detail', params: { poemName: decodeURIComponent(parts[1]) } };

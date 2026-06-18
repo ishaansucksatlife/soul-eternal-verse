@@ -195,6 +195,20 @@ function escapeHtml(str) {
     return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m]));
 }
 
+app.get('/share/:number', async (req, res) => {
+    const number = parseInt(req.params.number, 10);
+    if (isNaN(number)) {
+        return res.redirect('/home');
+    }
+    if (!cachedData) await refreshCache();
+    const poem = cachedData.allPoems.find(p => p.order === number);
+    if (poem) {
+        return res.redirect(301, '/poem/' + encodeURIComponent(poem.poemName));
+    } else {
+        return res.redirect('/collections');
+    }
+});
+
 app.get('/', (req, res) => {
     res.redirect(301, '/home');
 });

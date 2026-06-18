@@ -63,9 +63,7 @@
             const allCollections = window.appState.appData.collections;
             let found = false;
             for (const coll of allCollections) {
-                // Try exact match first
                 let poem = coll.poems.find(p => p.name === poemName);
-                // Fall back to case-insensitive match
                 if (!poem) {
                     poem = coll.poems.find(p => p.name.toLowerCase() === poemName.toLowerCase());
                 }
@@ -319,12 +317,17 @@
         if (shareBtn) {
             shareBtn.onclick = async () => {
                 if (!currentCollection || !currentPoem) return;
-                const url = `${window.location.origin}/poem/${encodeURIComponent(currentPoem.name)}`;
+                const poemOrder = currentPoem.order;
+                if (!poemOrder || poemOrder === 0) {
+                    window.showAlert('This poem does not have a shareable link.', 'Notice');
+                    return;
+                }
+                const shareUrl = `${window.location.origin}/share/${poemOrder}`;
                 try {
-                    await navigator.clipboard.writeText(url);
-                    window.showAlert('Link copied to clipboard!', 'Success');
+                    await navigator.clipboard.writeText(shareUrl);
+                    window.showAlert('Share link copied to clipboard!', 'Success');
                 } catch {
-                    window.showPrompt('Copy this link to share:', () => {}, null, 'Share Poem', url);
+                    window.showPrompt('Copy this link to share:', () => {}, null, 'Share Poem', shareUrl);
                 }
             };
         }
