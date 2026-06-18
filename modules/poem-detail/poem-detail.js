@@ -51,7 +51,7 @@
                 poemName = params.poemName;
             } else {
                 const path = window.location.pathname;
-                const match = path.match(/^\/poem\/(.+)$/);
+                const match = path.match(/^\/poems\/(.+)$/);
                 if (match) poemName = decodeURIComponent(match[1]);
             }
 
@@ -187,7 +187,7 @@
 
     function navigateTo(poem) {
         if (!currentCollection) return;
-        window.navigateTo('/poem/' + window.slugify(poem.name));
+        window.navigateTo('/poems/' + window.slugify(poem.name));
     }
 
     function updateBackLinks() {

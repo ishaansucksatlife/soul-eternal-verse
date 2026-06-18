@@ -80,7 +80,7 @@ function getRouteFromPath(path) {
             if (!isNaN(orderNumber) && window.appState?.appData) {
                 const poem = window.appState.appData.allPoems.find(p => p.order === orderNumber);
                 if (poem) {
-                    const targetPath = '/poem/' + slugify(poem.poemName);
+                    const targetPath = '/poems/' + slugify(poem.poemName);
                     navigateTo(targetPath);
                     return { module: 'poem-detail', params: { poemName: poem.poemName } };
                 }
@@ -89,7 +89,7 @@ function getRouteFromPath(path) {
         }
         return { module: 'home', params: {} };
     }
-    if (parts[0] === 'poem') {
+    if (parts[0] === 'poems') {
         if (parts.length >= 2) {
             const slug = parts[1];
             const poem = window.appState.appData?.allPoems.find(p => slugify(p.poemName) === slug);
@@ -308,7 +308,7 @@ document.getElementById('randomPoemBtn')?.addEventListener('click', () => {
     if (collection) {
         window.appState.currentCollection = collection;
         window.appState.currentPoem = random;
-        navigateTo('/poem/' + slugify(random.poemName));
+        navigateTo('/poems/' + slugify(random.poemName));
     }
 });
 

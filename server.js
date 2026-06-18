@@ -203,7 +203,7 @@ app.get('/share/:number', async (req, res) => {
     if (!cachedData) await refreshCache();
     const poem = cachedData.allPoems.find(p => p.order === number);
     if (poem) {
-        return res.redirect(301, '/poem/' + encodeURIComponent(poem.poemName));
+        return res.redirect(301, '/poems/' + encodeURIComponent(poem.poemName));
     } else {
         return res.redirect('/collections');
     }

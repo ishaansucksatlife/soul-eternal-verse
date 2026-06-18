@@ -130,7 +130,7 @@
         featuredCard.classList.add('poem-enter-active');
 
         featuredCard.onclick = () => {
-            window.navigateTo('/poem/' + window.slugify(poem.poemName));
+            window.navigateTo('/poems/' + window.slugify(poem.poemName));
         };
     }
 
