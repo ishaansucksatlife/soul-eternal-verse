@@ -187,7 +187,7 @@
 
     function navigateTo(poem) {
         if (!currentCollection) return;
-        window.navigateTo('/poem/' + encodeURIComponent(poem.name));
+        window.navigateTo('/poem/' + window.slugify(poem.name));
     }
 
     function updateBackLinks() {

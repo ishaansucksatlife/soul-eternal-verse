@@ -92,7 +92,7 @@
                 const poem = currentCollection.poems.find(p => p.name === poemName);
                 if (poem) {
                     window.appState.currentPoem = poem;
-                    window.navigateTo('/poem/' + encodeURIComponent(poem.name));
+                    window.navigateTo('/poem/' + window.slugify(poem.name));
                 }
             };
         });
