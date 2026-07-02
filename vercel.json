@@ -3,6 +3,7 @@
   "builds": [
     { "src": "server.js", "use": "@vercel/node" },
     { "src": "index.html", "use": "@vercel/static" },
+    { "src": "mobile.html", "use": "@vercel/static" },
     { "src": "css/**", "use": "@vercel/static" },
     { "src": "js/**", "use": "@vercel/static" },
     { "src": "modules/**", "use": "@vercel/static" },
@@ -11,7 +12,6 @@
     { "src": "banner-profile/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/", "dest": "/home", "status": 301 },
     { "src": "/api/(.*)", "dest": "/server.js" },
     { "src": "/css/(.*)", "dest": "/css/$1" },
     { "src": "/js/(.*)", "dest": "/js/$1" },
@@ -19,6 +19,6 @@
     { "src": "/cursors/(.*)", "dest": "/cursors/$1" },
     { "src": "/works/(.*)", "dest": "/works/$1" },
     { "src": "/banner-profile/(.*)", "dest": "/banner-profile/$1" },
-    { "src": "/(.*)", "dest": "/index.html" }
+    { "src": "/(.*)", "dest": "/server.js" }
   ]
 }

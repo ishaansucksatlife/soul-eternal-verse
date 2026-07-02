@@ -1,0 +1,461 @@
+window.showModule = function(moduleName, params) {
+    document.querySelectorAll('.module-container').forEach(c => {
+        c.classList.remove('active', 'animate-in');
+    });
+
+    const activeContainer = document.getElementById(`module-${moduleName}`);
+    if (!activeContainer) return;
+
+    const wasActive = activeContainer.classList.contains('active');
+    activeContainer.classList.add('active');
+
+    document.querySelectorAll('[data-module]').forEach(link => {
+        if (link.dataset.module === moduleName) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    const progressBar = document.getElementById('readingProgress');
+    if (progressBar) {
+        if (moduleName === 'poem-detail') {
+            const progressFill = document.getElementById('readingProgressBar');
+            if (progressFill) progressFill.style.width = '0%';
+        } else {
+            progressBar.style.display = 'none';
+            const progressFill = document.getElementById('readingProgressBar');
+            if (progressFill) progressFill.style.width = '0%';
+        }
+    }
+
+    if (!wasActive) {
+        void activeContainer.offsetWidth;
+        activeContainer.classList.add('animate-in');
+        activeContainer.addEventListener('animationend', function() {
+            this.classList.remove('animate-in');
+        }, { once: true });
+    }
+
+    window.dispatchEvent(new CustomEvent('moduleShown', { detail: { module: moduleName, params: params } }));
+};
+
+function slugify(text) {
+    return text
+        .toString()
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\-]+/g, '')
+        .replace(/\-\-+/g, '-')
+        .replace(/^-+/, '')
+        .replace(/-+$/, '');
+}
+window.slugify = slugify;
+
+const modules = ['home', 'collections', 'about', 'contact', 'poems', 'poem-detail'];
+
+function getRouteFromPath(path) {
+    const parts = path.split('/').filter(p => p.length > 0);
+    if (parts.length === 0 || parts[0] === 'home') {
+        return { module: 'home', params: {} };
+    }
+    if (parts[0] === 'collections') {
+        if (parts.length === 1) {
+            return { module: 'collections', params: {} };
+        } else {
+            const slug = parts[1];
+            const collection = window.appState.appData?.collections.find(c => slugify(c.name) === slug);
+            if (collection) {
+                return { module: 'poems', params: { collectionName: collection.name } };
+            }
+            return { module: 'poems', params: { collectionName: decodeURIComponent(slug) } };
+        }
+    }
+    if (parts[0] === 'share') {
+        if (parts.length >= 2) {
+            const orderNumber = parseInt(parts[1], 10);
+            if (!isNaN(orderNumber) && window.appState?.appData) {
+                const poem = window.appState.appData.allPoems.find(p => p.order === orderNumber);
+                if (poem) {
+                    const targetPath = '/poems/' + slugify(poem.poemName);
+                    navigateTo(targetPath);
+                    return { module: 'poem-detail', params: { poemName: poem.poemName } };
+                }
+            }
+            return { module: 'home', params: {} };
+        }
+        return { module: 'home', params: {} };
+    }
+    if (parts[0] === 'poems') {
+        if (parts.length >= 2) {
+            const slug = parts[1];
+            const poem = window.appState.appData?.allPoems.find(p => slugify(p.poemName) === slug);
+            if (poem) {
+                return { module: 'poem-detail', params: { poemName: poem.poemName } };
+            } else {
+                return { module: 'poem-detail', params: { poemName: decodeURIComponent(slug) } };
+            }
+        } else {
+            return { module: 'home', params: {} };
+        }
+    }
+    if (parts[0] === 'about') {
+        return { module: 'about', params: {} };
+    }
+    if (parts[0] === 'contact') {
+        return { module: 'contact', params: {} };
+    }
+    return { module: 'home', params: {} };
+}
+
+function getCurrentRoute() {
+    const path = window.location.pathname;
+    if (path === '/' || path === '') {
+        return { module: 'home', params: {} };
+    }
+    return getRouteFromPath(path);
+}
+
+function navigateTo(path, params) {
+    const targetPath = path.startsWith('/') ? path : '/' + path;
+    history.pushState({}, '', targetPath);
+    const route = getRouteFromPath(targetPath);
+    if (route.module === 'poems') {
+        window.appState.currentCollectionName = route.params.collectionName;
+    } else if (route.module === 'poem-detail') {
+        const poemName = route.params.poemName;
+        if (!window.appState.appData) return;
+        for (const coll of window.appState.appData.collections) {
+            const poem = coll.poems.find(p => p.name === poemName);
+            if (poem) {
+                window.appState.currentCollection = coll;
+                window.appState.currentPoem = poem;
+                break;
+            }
+        }
+    }
+    window.showModule(route.module, route.params);
+    if (route.module === 'poems') {
+        const event = new CustomEvent('collectionChanged', { detail: { collectionName: route.params.collectionName } });
+        window.dispatchEvent(event);
+    }
+    if (route.module === 'poem-detail') {
+        const event = new CustomEvent('poemChanged', { detail: { poemName: route.params.poemName } });
+        window.dispatchEvent(event);
+    }
+}
+window.navigateTo = navigateTo;
+
+function handlePopState() {
+    const route = getCurrentRoute();
+    if (route.module === 'poems') {
+        window.appState.currentCollectionName = route.params.collectionName;
+    } else if (route.module === 'poem-detail') {
+        const poemName = route.params.poemName;
+        if (!window.appState.appData) return;
+        for (const coll of window.appState.appData.collections) {
+            const poem = coll.poems.find(p => p.name === poemName);
+            if (poem) {
+                window.appState.currentCollection = coll;
+                window.appState.currentPoem = poem;
+                break;
+            }
+        }
+    }
+    window.showModule(route.module, route.params);
+}
+
+async function preloadAll() {
+    const loader = document.getElementById('loading-screen');
+    if (!loader) return;
+
+    try {
+        const dataRes = await fetch('/api/data');
+        if (!dataRes.ok) throw new Error(`HTTP ${dataRes.status}`);
+        window.appState.appData = await dataRes.json();
+
+        preloadAllImages(window.appState.appData);
+
+        const modulePromises = modules.map(async (moduleName) => {
+            const prefix = 'mobile-';
+            const [htmlRes, cssRes, jsRes] = await Promise.all([
+                fetch(`/modules/${moduleName}/${prefix}${moduleName}.html`),
+                fetch(`/modules/${moduleName}/${prefix}${moduleName}.css`).catch(() => ({ ok: false })),
+                fetch(`/modules/${moduleName}/${prefix}${moduleName}.js`)
+            ]);
+            const html = await htmlRes.text();
+            const css = cssRes.ok ? await cssRes.text() : null;
+            const js = await jsRes.text();
+            return { moduleName, html, css, js };
+        });
+
+        const modulesData = await Promise.all(modulePromises);
+
+        for (const { moduleName, html, css, js } of modulesData) {
+            const container = document.getElementById(`module-${moduleName}`);
+            if (container) container.innerHTML = html;
+            if (css && !document.querySelector(`style[data-module="${moduleName}"]`)) {
+                const style = document.createElement('style');
+                style.textContent = css;
+                style.setAttribute('data-module', moduleName);
+                document.head.appendChild(style);
+            }
+            const script = document.createElement('script');
+            script.textContent = js;
+            script.setAttribute('data-module', moduleName);
+            document.body.appendChild(script);
+        }
+
+        loader.classList.add('hide');
+        initModal();
+
+        const route = getCurrentRoute();
+        if (route.module === 'poems') {
+            window.appState.currentCollectionName = route.params.collectionName;
+        } else if (route.module === 'poem-detail') {
+            const poemName = route.params.poemName;
+            if (window.appState.appData) {
+                for (const coll of window.appState.appData.collections) {
+                    const poem = coll.poems.find(p => p.name === poemName);
+                    if (poem) {
+                        window.appState.currentCollection = coll;
+                        window.appState.currentPoem = poem;
+                        break;
+                    }
+                }
+            }
+        }
+        window.showModule(route.module, route.params);
+
+    } catch (err) {
+        console.error('Preload failed:', err);
+        loader.innerHTML = '<div class="loading-text">Failed to load. Please refresh.</div>';
+    }
+}
+
+function preloadAllImages(data) {
+    const urls = [];
+
+    urls.push('/banner-profile/banner.png');
+    urls.push('/banner-profile/profile.png');
+
+    data.collections.forEach(coll => {
+        if (coll.hasCover) {
+            urls.push(`/works/${encodeURIComponent(coll.name)}/c-cover.png`);
+        }
+    });
+
+    data.allPoems.forEach(poem => {
+        if (poem.hasCover) {
+            urls.push(`/works/${encodeURIComponent(poem.collectionName)}/${encodeURIComponent(poem.poemName)}/p-cover.png`);
+        }
+    });
+
+    urls.forEach(url => {
+        const img = new Image();
+        img.src = url;
+    });
+}
+
+document.querySelectorAll('[data-module]').forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const module = link.dataset.module;
+        let path;
+        if (module === 'home') path = '/home';
+        else if (module === 'collections') path = '/collections';
+        else if (module === 'about') path = '/about';
+        else if (module === 'contact') path = '/contact';
+        else return;
+        navigateTo(path);
+    });
+});
+
+window.addEventListener('popstate', handlePopState);
+
+const themeToggle = document.getElementById('themeToggle');
+if (themeToggle) {
+    const isDark = document.body.classList.contains('dark-mode');
+    themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    themeToggle.onclick = () => {
+        document.body.classList.toggle('dark-mode');
+        const nowDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('darkMode', nowDark);
+        themeToggle.innerHTML = nowDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    };
+}
+
+const backBtn = document.getElementById('backToTop');
+if (backBtn) {
+    window.addEventListener('scroll', () => {
+        backBtn.classList.toggle('visible', window.scrollY > 500);
+    });
+    backBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.getElementById('randomPoemBtn')?.addEventListener('click', () => {
+    if (!window.appState.appData) return;
+    const poems = window.appState.appData.allPoems;
+    if (!poems.length) return;
+    const random = poems[Math.floor(Math.random() * poems.length)];
+    const collection = window.appState.appData.collections.find(c => c.name === random.collectionName);
+    if (collection) {
+        window.appState.currentCollection = collection;
+        window.appState.currentPoem = random;
+        navigateTo('/poems/' + slugify(random.poemName));
+    }
+});
+
+document.getElementById('closeFocus')?.addEventListener('click', () => {
+    document.getElementById('focusMode')?.classList.remove('active');
+});
+
+function preventDefault(e) {
+    e.preventDefault();
+    return false;
+}
+
+document.addEventListener('contextmenu', preventDefault);
+document.addEventListener('selectstart', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    e.preventDefault();
+    return false;
+});
+document.addEventListener('copy', preventDefault);
+document.addEventListener('cut', preventDefault);
+document.addEventListener('paste', preventDefault);
+document.addEventListener('dragstart', preventDefault);
+
+document.addEventListener('touchstart', function(e) {
+    if (e.target.closest('.poem-content') || e.target.closest('.focus-mode-content')) {
+        e.preventDefault();
+    }
+}, { passive: false });
+
+const style = document.createElement('style');
+style.textContent = `
+    body {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -webkit-touch-callout: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+    input, textarea {
+        user-select: text;
+        -webkit-user-select: text;
+    }
+    img, a, button, .poem-content, .focus-mode-content {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+    }
+`;
+document.head.appendChild(style);
+
+let modal = null;
+let modalCallback = null;
+
+function createModal() {
+    const modalDiv = document.createElement('div');
+    modalDiv.id = 'custom-modal';
+    modalDiv.className = 'custom-modal';
+    modalDiv.innerHTML = `
+        <div class="custom-modal-overlay"></div>
+        <div class="custom-modal-container">
+            <div class="custom-modal-header">
+                <h3 id="modal-title">Notice</h3>
+                <button class="custom-modal-close">&times;</button>
+            </div>
+            <div class="custom-modal-body">
+                <p id="modal-message"></p>
+                <div id="modal-input-container" style="display: none;">
+                    <input type="text" id="modal-input" placeholder="Enter value...">
+                </div>
+            </div>
+            <div class="custom-modal-footer">
+                <button id="modal-cancel-btn" class="modal-btn cancel-btn">Cancel</button>
+                <button id="modal-ok-btn" class="modal-btn ok-btn">OK</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modalDiv);
+    return modalDiv;
+}
+
+function initModal() {
+    if (!modal) modal = createModal();
+    const overlay = modal.querySelector('.custom-modal-overlay');
+    const closeBtn = modal.querySelector('.custom-modal-close');
+    const cancelBtn = modal.querySelector('#modal-cancel-btn');
+    const okBtn = modal.querySelector('#modal-ok-btn');
+
+    function hideModal() {
+        modal.classList.remove('active');
+        if (modalCallback && modalCallback.cancel) modalCallback.cancel();
+        modalCallback = null;
+        const inputField = modal.querySelector('#modal-input');
+        if (inputField) inputField.value = '';
+    }
+
+    overlay.onclick = hideModal;
+    closeBtn.onclick = hideModal;
+    cancelBtn.onclick = () => {
+        if (modalCallback && modalCallback.cancel) modalCallback.cancel();
+        hideModal();
+    };
+    okBtn.onclick = () => {
+        const inputField = modal.querySelector('#modal-input');
+        if (modalCallback) {
+            const value = inputField.style.display !== 'none' ? inputField.value : null;
+            modalCallback.ok(value);
+        }
+        hideModal();
+    };
+}
+
+window.showAlert = function(message, title = 'Notice') {
+    if (!modal) initModal();
+    modal.querySelector('#modal-title').innerText = title;
+    modal.querySelector('#modal-message').innerText = message;
+    modal.querySelector('#modal-input-container').style.display = 'none';
+    modal.querySelector('#modal-cancel-btn').style.display = 'none';
+    modal.querySelector('#modal-ok-btn').style.display = 'block';
+    modal.classList.add('active');
+    setTimeout(() => {
+        if (modal && modal.classList.contains('active')) {
+            modal.classList.remove('active');
+            modalCallback = null;
+        }
+    }, 3000);
+};
+
+window.showConfirm = function(message, onOk, onCancel, title = 'Confirm') {
+    if (!modal) initModal();
+    modal.querySelector('#modal-title').innerText = title;
+    modal.querySelector('#modal-message').innerText = message;
+    modal.querySelector('#modal-input-container').style.display = 'none';
+    modal.querySelector('#modal-cancel-btn').style.display = 'block';
+    modal.querySelector('#modal-ok-btn').style.display = 'block';
+    modalCallback = { ok: onOk, cancel: onCancel };
+    modal.classList.add('active');
+};
+
+window.showPrompt = function(message, onOk, onCancel, title = 'Input', defaultValue = '') {
+    if (!modal) initModal();
+    modal.querySelector('#modal-title').innerText = title;
+    modal.querySelector('#modal-message').innerText = message;
+    const inputContainer = modal.querySelector('#modal-input-container');
+    inputContainer.style.display = 'block';
+    const inputField = modal.querySelector('#modal-input');
+    inputField.value = defaultValue;
+    modal.querySelector('#modal-cancel-btn').style.display = 'block';
+    modal.querySelector('#modal-ok-btn').style.display = 'block';
+    modalCallback = { ok: onOk, cancel: onCancel };
+    modal.classList.add('active');
+};
+
+preloadAll();

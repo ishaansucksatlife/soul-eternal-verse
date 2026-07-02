@@ -1,0 +1,778 @@
+@media screen and (max-width: 1024px) {
+  .container {
+    padding: 0 16px;
+  }
+  header {
+    padding: 0.5rem 0;
+  }
+  .header-content {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .logo {
+    font-size: 1.6rem;
+  }
+  nav ul {
+    gap: 0.5rem;
+  }
+  nav ul li a {
+    font-size: 0.85rem;
+    padding: 0.3rem 0;
+  }
+  .header-actions {
+    gap: 0.3rem;
+  }
+  .theme-toggle,
+  .random-poem-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 0.9rem;
+  }
+  .module-container {
+    padding: 80px 12px 40px 12px;
+  }
+  .module-container.animate-in {
+    animation: none;
+  }
+  .back-to-top {
+    width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
+    bottom: 16px;
+    left: 16px;
+  }
+  .reading-progress {
+    height: 2px;
+  }
+  .focus-mode {
+    padding: 1rem;
+  }
+  .close-focus {
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+  .focus-mode-content {
+    padding: 1.2rem;
+    max-height: 80vh;
+  }
+  .focus-mode-content .poem-content {
+    font-size: 1.2rem !important;
+    line-height: 1.8 !important;
+  }
+  footer {
+    padding: 1rem;
+    font-size: 0.8rem;
+  }
+  footer .container {
+    padding: 0 8px;
+  }
+  .custom-modal-container {
+    max-width: 90%;
+  }
+  .custom-modal-header h3 {
+    font-size: 1.1rem;
+  }
+  .custom-modal-body {
+    padding: 1rem;
+  }
+  .modal-btn {
+    padding: 0.4rem 1rem;
+    font-size: 0.9rem;
+  }
+  #loading-screen .loader-spinner {
+    width: 60px;
+    height: 60px;
+  }
+  .loader-feather {
+    font-size: 1.5rem;
+  }
+  .loading-text {
+    font-size: 0.9rem;
+    letter-spacing: 1.5px;
+  }
+}
+@media screen and (max-width: 768px) {
+  body {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .module-container {
+    padding: 100px 0 40px 0;
+  }
+  .nav-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .back-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 16px;
+    font-size: 1rem;
+    border-radius: 40px;
+  }
+  .back-btn:active {
+    transform: scale(0.96);
+  }
+  .breadcrumb {
+    font-size: 0.85rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .breadcrumb a {
+    padding: 4px 8px;
+  }
+  .page-title {
+    font-size: 2rem;
+    margin: 0.5rem 0 1.2rem;
+  }
+  .page-title:after {
+    width: 50px;
+    height: 2px;
+    margin: 0.5rem auto;
+  }
+  .search-system {
+    max-width: 100%;
+    margin: 0 auto 1.2rem;
+  }
+  .search-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .search-box {
+    width: 100%;
+    border-radius: 40px;
+  }
+  .search-box input {
+    padding: 10px 14px;
+    font-size: 0.95rem;
+  }
+  .search-actions {
+    flex-wrap: nowrap;
+  }
+  .sort-btn,
+  .filter-toggle,
+  .search-btn {
+    padding: 0 12px;
+    min-width: 40px;
+    font-size: 0.9rem;
+  }
+  .sort-dropdown {
+    right: 0;
+    left: auto;
+    min-width: 160px;
+  }
+  .filter-panel {
+    padding: 0.8rem;
+    border-radius: 20px;
+  }
+  .filter-tags {
+    gap: 6px;
+  }
+  .filter-tag {
+    padding: 6px 14px;
+    font-size: 0.85rem;
+  }
+  .clear-filters-btn {
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+  }
+  .collections-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .collection-card {
+    border-radius: 20px;
+  }
+  .collection-img {
+    height: 160px;
+  }
+  .collection-title {
+    font-size: 1.4rem;
+  }
+  .collection-info {
+    padding: 1rem;
+  }
+  .collection-info p {
+    font-size: 0.95rem;
+  }
+  .collection-tags {
+    margin: 6px 0;
+    gap: 4px;
+  }
+  .collection-count {
+    font-size: 0.85rem;
+    margin-top: 6px;
+  }
+  .poems-list {
+    max-width: 100%;
+    padding: 0 4px;
+  }
+  .poem-item {
+    padding: 1rem;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+  }
+  .poem-title {
+    font-size: 1.3rem;
+  }
+  .poem-stats {
+    font-size: 0.8rem;
+    gap: 0.8rem;
+  }
+  .poem-preview {
+    font-size: 0.95rem;
+    -webkit-line-clamp: 2;
+  }
+  .tag {
+    font-size: 0.7rem;
+    padding: 2px 10px;
+    margin: 2px 2px 0 0;
+  }
+  .poem-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+    margin: 0 auto 0.8rem;
+  }
+  .focus-toggle {
+    width: 100%;
+    justify-content: center;
+    padding: 10px 16px;
+    font-size: 0.95rem;
+    border-radius: 40px;
+  }
+  .poem-actions {
+    justify-content: center;
+    gap: 0.8rem;
+  }
+  .action-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+  }
+  .poem-nav-buttons {
+    gap: 0.6rem;
+    flex-wrap: nowrap;
+    justify-content: center;
+  }
+  .poem-nav-buttons button {
+    flex: 1;
+    justify-content: center;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .poem-nav-buttons .nav-text {
+    max-width: 80px;
+    font-size: 0.75rem;
+  }
+  .poem-detail-container {
+    padding: 1rem;
+    border-radius: 24px;
+  }
+  .poem-detail {
+    max-height: 55vh;
+    padding-right: 4px;
+  }
+  .poem-detail-title {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+  .poem-cover img {
+    max-height: 180px;
+    border-radius: 16px;
+    margin: 0.5rem auto;
+  }
+  .poem-detail-meta {
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+  }
+  .poem-content {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin: 1rem 0;
+  }
+  .poem-signature {
+    font-size: 1rem;
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    gap: 6px;
+  }
+  .scroll-top-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+    bottom: 16px;
+    right: 16px;
+  }
+  .poem-focus-overlay {
+    padding: 1rem;
+  }
+  .poem-focus-content {
+    padding: 1.2rem;
+    border-radius: 20px;
+  }
+  .poem-focus-content .poem-content {
+    font-size: 1.4rem !important;
+    line-height: 2.2 !important;
+  }
+  .about-container {
+    padding: 1.5rem;
+    border-radius: 24px;
+  }
+  .about-quote {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.5rem;
+    padding: 1rem 1.2rem;
+  }
+  .about-quote i {
+    font-size: 1.6rem;
+  }
+  .quote-text {
+    font-size: 1.1rem;
+  }
+  .about-content {
+    font-size: 1rem;
+  }
+  .about-content p {
+    margin-bottom: 1rem;
+  }
+  .about-signature {
+    font-size: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .handwritten {
+    font-size: 1.8rem;
+    min-width: auto;
+  }
+  .contact-wrapper {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+  .contact-card {
+    padding: 1.2rem;
+    border-radius: 20px;
+  }
+  .contact-card i,
+  .bluesky-icon {
+    font-size: 1.8rem;
+  }
+  .contact-card h3 {
+    font-size: 1.1rem;
+  }
+  .contact-card p {
+    font-size: 0.95rem;
+  }
+  .contact-form-container {
+    padding: 1.2rem;
+    border-radius: 20px;
+  }
+  .contact-intro {
+    font-size: 0.95rem;
+  }
+  .contact-form {
+    gap: 1rem;
+  }
+  .form-group input,
+  .form-group textarea {
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    border-radius: 14px;
+  }
+  .submit-btn {
+    padding: 12px 20px;
+    font-size: 1rem;
+    border-radius: 40px;
+  }
+  .copy-btn {
+    top: 0.6rem;
+    right: 0.6rem;
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+  .empty-state {
+    padding: 2rem;
+  }
+  .empty-icon {
+    font-size: 3rem;
+  }
+  .stat-card {
+    padding: 0.6rem 1rem;
+    min-width: 80px;
+  }
+  .stat-number {
+    font-size: 1.8rem;
+  }
+  .stat-label {
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+  }
+  .featured-showcase {
+    margin: 1.5rem auto;
+    border-radius: 28px;
+  }
+  .featured-poem-card {
+    padding: 1.2rem;
+    min-height: 100px;
+  }
+  .featured-poem-card strong {
+    font-size: 1.1rem;
+  }
+  .featured-poem-card small {
+    font-size: 0.8rem;
+  }
+  .home-quote {
+    padding: 0.8rem 1.2rem;
+    gap: 0.6rem;
+    border-radius: 40px;
+    font-size: 0.95rem;
+  }
+  .home-quote i {
+    font-size: 1rem;
+  }
+  .home-quote .quote-text-container {
+    min-height: 1.8em;
+  }
+  .nav-buttons {
+    gap: 0.8rem;
+    flex-direction: column;
+    align-items: center;
+  }
+  .nav-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+    border-radius: 40px;
+  }
+  .profile-hero {
+    border-radius: 24px;
+    margin-top: 0;
+  }
+  .banner {
+    height: 180px;
+  }
+  .banner-overlay {
+    background: linear-gradient(to bottom, transparent 20%, var(--card) 90%);
+  }
+  .profile-content {
+    padding: 0 16px 24px;
+    margin-top: -50px;
+  }
+  .profile-pic {
+    width: 90px;
+    height: 90px;
+    border-width: 4px;
+    margin: 0 auto 12px;
+  }
+  .profile-name {
+    font-size: 2rem;
+    margin-bottom: 0.3rem;
+  }
+  .profile-username {
+    font-size: 0.95rem;
+    padding: 0.2rem 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .profile-bio {
+    font-size: 0.95rem;
+    padding: 0.4rem 1.2rem;
+    max-width: 100%;
+  }
+  .greeting {
+    font-size: 0.95rem;
+    padding: 0.2rem 1rem;
+  }
+  .stats-grid {
+    gap: 0.6rem;
+    margin: 1.5rem 0 1.2rem;
+  }
+  .stat-card {
+    padding: 0.5rem 0.8rem;
+    min-width: 70px;
+    border-radius: 20px;
+  }
+  .stat-number {
+    font-size: 1.4rem;
+  }
+  .stat-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.5px;
+  }
+  .poem-focus-overlay .poem-focus-close-btn {
+    top: 12px;
+    right: 16px;
+    font-size: 1.6rem;
+  }
+  .custom-modal-close {
+    font-size: 1.4rem;
+  }
+}
+@media screen and (max-width: 480px) {
+  .container {
+    padding: 0 8px;
+  }
+  .module-container {
+    padding: 80px 4px 30px 4px;
+  }
+  .logo {
+    font-size: 1.4rem;
+  }
+  nav ul {
+    gap: 0.3rem;
+  }
+  nav ul li a {
+    font-size: 0.75rem;
+    padding: 0.2rem 0;
+  }
+  .header-actions {
+    gap: 0.2rem;
+  }
+  .theme-toggle,
+  .random-poem-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+  .breadcrumb {
+    font-size: 0.7rem;
+  }
+  .breadcrumb a {
+    padding: 2px 6px;
+  }
+  .page-title {
+    font-size: 1.6rem;
+    margin: 0.3rem 0 0.8rem;
+  }
+  .back-btn {
+    font-size: 0.9rem;
+    padding: 10px 16px;
+  }
+  .search-box input {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+  .sort-btn,
+  .filter-toggle,
+  .search-btn {
+    padding: 0 8px;
+    min-width: 32px;
+    font-size: 0.8rem;
+  }
+  .collection-card {
+    border-radius: 16px;
+  }
+  .collection-img {
+    height: 130px;
+  }
+  .collection-title {
+    font-size: 1.2rem;
+  }
+  .collection-info p {
+    font-size: 0.85rem;
+  }
+  .poem-item {
+    padding: 0.8rem;
+    border-radius: 16px;
+    margin-bottom: 0.8rem;
+  }
+  .poem-title {
+    font-size: 1.1rem;
+  }
+  .poem-stats {
+    font-size: 0.65rem;
+    gap: 0.5rem;
+  }
+  .poem-preview {
+    font-size: 0.85rem;
+  }
+  .poem-detail-container {
+    padding: 0.8rem;
+    border-radius: 16px;
+  }
+  .poem-detail-title {
+    font-size: 1.6rem;
+  }
+  .poem-content {
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+  .poem-signature {
+    font-size: 0.9rem;
+  }
+  .action-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 0.9rem;
+  }
+  .focus-toggle {
+    font-size: 0.85rem;
+    padding: 8px 12px;
+  }
+  .poem-nav-buttons button {
+    font-size: 0.75rem;
+    padding: 6px 8px;
+  }
+  .poem-nav-buttons .nav-text {
+    max-width: 50px;
+    font-size: 0.65rem;
+  }
+  .about-container {
+    padding: 1rem;
+  }
+  .about-quote {
+    padding: 0.8rem;
+  }
+  .quote-text {
+    font-size: 1rem;
+  }
+  .about-content {
+    font-size: 0.95rem;
+  }
+  .about-signature {
+    font-size: 0.9rem;
+  }
+  .handwritten {
+    font-size: 1.5rem;
+  }
+  .contact-card {
+    padding: 1rem;
+  }
+  .contact-card i,
+  .bluesky-icon {
+    font-size: 1.5rem;
+  }
+  .contact-card h3 {
+    font-size: 1rem;
+  }
+  .contact-card p {
+    font-size: 0.85rem;
+  }
+  .contact-form-container {
+    padding: 1rem;
+  }
+  .form-group input,
+  .form-group textarea {
+    font-size: 0.85rem;
+    padding: 8px 12px;
+  }
+  .submit-btn {
+    font-size: 0.9rem;
+    padding: 10px 16px;
+  }
+  .custom-modal-container {
+    border-radius: 20px;
+  }
+  .custom-modal-header {
+    padding: 0.5rem 1rem;
+  }
+  .custom-modal-body {
+    padding: 0.8rem;
+  }
+  .modal-btn {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  .custom-modal-close {
+    font-size: 1.2rem;
+  }
+  .stat-card {
+    padding: 0.3rem 0.5rem;
+    min-width: 50px;
+  }
+  .stat-number {
+    font-size: 1.2rem;
+  }
+  .stat-label {
+    font-size: 0.5rem;
+  }
+  .featured-poem-card {
+    padding: 0.8rem;
+    min-height: 70px;
+  }
+  .featured-poem-card strong {
+    font-size: 1rem;
+  }
+  .home-quote {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+  .home-quote i {
+    font-size: 0.8rem;
+  }
+  .nav-btn {
+    padding: 0.7rem 1rem;
+    font-size: 0.9rem;
+  }
+  .profile-pic {
+    width: 70px;
+    height: 70px;
+    border-width: 3px;
+    margin-bottom: 8px;
+  }
+  .profile-name {
+    font-size: 1.6rem;
+  }
+  .profile-username {
+    font-size: 0.85rem;
+  }
+  .profile-bio {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.8rem;
+  }
+  .greeting {
+    font-size: 0.85rem;
+  }
+  .banner {
+    height: 130px;
+  }
+  .back-to-top {
+    width: 34px;
+    height: 34px;
+    font-size: 0.8rem;
+    bottom: 12px;
+    left: 12px;
+  }
+  .close-focus {
+    width: 34px;
+    height: 34px;
+    font-size: 1rem;
+    top: 12px;
+    right: 12px;
+  }
+  .scroll-top-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 0.8rem;
+    bottom: 12px;
+    right: 12px;
+  }
+  .focus-mode-content {
+    padding: 0.8rem;
+    border-radius: 16px;
+  }
+  .focus-mode-content .poem-content {
+    font-size: 1rem !important;
+  }
+  .poem-focus-content {
+    padding: 0.8rem;
+    border-radius: 16px;
+  }
+  .poem-focus-content .poem-content {
+    font-size: 1rem !important;
+  }
+}

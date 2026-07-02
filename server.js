@@ -22,6 +22,11 @@ app.use('/banner-profile', express.static(path.join(__dirname, 'banner-profile')
 
 let cachedData = null;
 
+function isMobileDevice(req) {
+    const ua = req.headers['user-agent'] || '';
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|Tablet/i.test(ua);
+}
+
 async function readTagsFile(filePath) {
     try {
         const content = await fs.readFile(filePath, 'utf-8');
@@ -214,7 +219,11 @@ app.get('/', (req, res) => {
 });
 
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    if (isMobileDevice(req)) {
+        res.sendFile(path.join(__dirname, 'mobile.html'));
+    } else {
+        res.sendFile(path.join(__dirname, 'index.html'));
+    }
 });
 
 if (require.main === module) {

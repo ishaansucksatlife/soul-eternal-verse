@@ -1,0 +1,360 @@
+.poem-toolbar {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+    max-width: 100%;
+    margin: 0 auto 0.8rem;
+}
+.poem-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+}
+.action-icon {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: none;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+.action-icon:active {
+    background: var(--accent);
+    color: white;
+    transform: scale(0.95);
+}
+.focus-toggle {
+    background: var(--primary);
+    border: none;
+    padding: 10px 16px;
+    border-radius: 40px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: none;
+    font-size: 0.95rem;
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.focus-toggle:active {
+    background: var(--accent);
+}
+.poem-nav-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    max-width: 100%;
+    margin: 0 auto 1rem;
+    flex-wrap: nowrap;
+}
+.poem-nav-buttons button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 40px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    flex: 1;
+    justify-content: center;
+    font-size: 0.85rem;
+}
+.poem-nav-buttons button:active {
+    background: var(--accent);
+}
+.poem-nav-buttons .nav-text {
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    font-size: 0.75rem;
+}
+.poem-nav-buttons button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+.poem-detail-container {
+    max-width: 100%;
+    margin: 0 auto;
+    background: var(--card);
+    border-radius: 24px;
+    padding: 1rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    position: relative;
+}
+.poem-detail {
+    position: relative;
+    max-height: 55vh;
+    overflow-y: auto;
+    padding-right: 4px;
+    user-select: none;
+}
+#poemReadingProgress {
+    width: 100%;
+    height: 3px;
+    background: var(--border);
+    border-radius: 4px;
+    margin-bottom: 0.8rem;
+    overflow: hidden;
+}
+#poemReadingProgressBar {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    transition: width 0.1s linear;
+    border-radius: 4px;
+}
+.poem-detail-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    color: var(--coffee-dark);
+}
+.poem-cover img {
+    max-width: 100%;
+    max-height: 180px;
+    border-radius: 16px;
+    margin: 0.5rem auto;
+    display: block;
+}
+.poem-detail-meta {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    color: var(--primary);
+}
+.poem-content {
+    white-space: pre-wrap;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    text-align: center;
+    margin: 1rem 0;
+    transition: font-size 0.2s;
+}
+.poem-signature {
+    text-align: right;
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border);
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--accent);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+}
+.loading {
+    text-align: center;
+    padding: 2rem;
+}
+.spinner {
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 0.5rem;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+.word {
+    transition: background-color 0.15s, color 0.15s;
+    border-radius: 4px;
+    padding: 0 1px;
+}
+.word.speaking {
+    background-color: var(--accent);
+    color: white;
+}
+.scroll-top-btn {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s, background 0.2s;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.scroll-top-btn.visible {
+    opacity: 1;
+    visibility: visible;
+}
+.scroll-top-btn:active {
+    background: var(--accent);
+}
+.poem-focus-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 2001;
+    padding: 1rem;
+    align-items: center;
+    justify-content: center;
+}
+.poem-focus-overlay.active {
+    display: flex;
+}
+.poem-focus-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.8rem;
+    cursor: pointer;
+    z-index: 2002;
+    transition: color 0.2s;
+}
+.poem-focus-close-btn:active {
+    color: var(--accent);
+}
+.poem-focus-content {
+    max-width: 100%;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: var(--card);
+    border-radius: 20px;
+    padding: 1.2rem;
+    font-family: 'Crimson Text', serif;
+    color: var(--text);
+}
+.poem-focus-content .poem-content {
+    font-size: 1.4rem !important;
+    line-height: 2.2 !important;
+}
+.poem-detail.animate-content {
+    animation: contentFadeIn 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+}
+@keyframes contentFadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.nav-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+.back-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 16px;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: none;
+    box-shadow: var(--shadow-sm);
+    text-decoration: none;
+    width: 100%;
+}
+.back-btn:active {
+    transform: scale(0.96);
+}
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 0.85rem;
+    flex-wrap: wrap;
+}
+.breadcrumb a {
+    color: var(--primary);
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 30px;
+    transition: background 0.2s;
+}
+.breadcrumb a:active {
+    background: rgba(139, 90, 43, 0.15);
+}
+@media (max-width: 480px) {
+    .poem-detail-title {
+        font-size: 1.6rem;
+    }
+    .poem-content {
+        font-size: 1rem;
+        line-height: 1.7;
+    }
+    .action-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 0.9rem;
+    }
+    .focus-toggle {
+        font-size: 0.85rem;
+        padding: 8px 12px;
+    }
+    .poem-nav-buttons button {
+        font-size: 0.75rem;
+        padding: 6px 8px;
+    }
+    .poem-nav-buttons .nav-text {
+        max-width: 50px;
+        font-size: 0.65rem;
+    }
+    .scroll-top-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 0.8rem;
+        bottom: 12px;
+        right: 12px;
+    }
+    .poem-focus-content .poem-content {
+        font-size: 1.2rem !important;
+        line-height: 2 !important;
+    }
+    .back-btn {
+        font-size: 0.9rem;
+        padding: 10px 12px;
+    }
+    .breadcrumb {
+        font-size: 0.75rem;
+    }
+}
