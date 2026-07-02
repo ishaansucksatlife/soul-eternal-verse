@@ -24,7 +24,14 @@ let cachedData = null;
 
 function isMobileDevice(req) {
     const ua = req.headers['user-agent'] || '';
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|Tablet/i.test(ua);
+    const isMobileHint = req.headers['sec-ch-ua-mobile'] === '?1';
+    if (isMobileHint) return true;
+    const mobileTokens = [
+        'Android', 'webOS', 'iPhone', 'iPad', 'iPod',
+        'BlackBerry', 'IEMobile', 'Opera Mini',
+        'Mobile', 'Tablet', 'Kindle', 'Silk'
+    ];
+    return mobileTokens.some(token => ua.includes(token));
 }
 
 async function readTagsFile(filePath) {
